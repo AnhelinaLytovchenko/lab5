@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дрифт: коротко про головне</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .align-left {
-            text-align: left;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
+        <!-- Верхній блок з заголовком -->
         <header>
             <h1 class="left">Дрифт: коротко про головне</h1>
             <div class="x-header">
@@ -20,7 +16,9 @@
             </div>
         </header>
 
-        <nav class="menu" id="block2">
+        <!-- Блок меню зліва -->
+        <nav class="menu">
+            <!-- Чекбокс для управління меню -->
             <input type="checkbox" id="menu-toggle" class="menu-toggle">
             <label for="menu-toggle" class="menu-title">Меню</label>
             <ul class="menu-list">
@@ -32,23 +30,37 @@
             </ul>
         </nav>
 
-        <div class="content" id="block3">
+        <!-- Основний контент -->
+        <div class="content" id="content">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
             <p>Дрифтинг – це не просто автоспорт, це мистецтво, яке вражає і захоплює. На нашому сайті ми відкриємо для вас захоплюючий світ дрифту: від його витоків і розвитку до сучасних тенденцій та технік.</p>
-            <form id="numberForm">
-                <label for="numberInput">Введіть число:</label>
-                <input type="number" id="numberInput" required>
-                <button type="button" onclick="reverseNumber()">Перевернути</button>
+
+            <!-- Форма для вибору вирівнювання -->
+            <form id="alignmentForm">
+                <h3>Вибір вирівнювання:</h3>
+                <div>
+                    <label for="menu-align">Меню:</label>
+                    <input type="radio" id="menu-align" name="alignment" value="left"> Ліво
+                </div>
+                <div>
+                    <label for="content-align">Контент:</label>
+                    <input type="radio" id="content-align" name="alignment" value="left"> Ліво
+                </div>
+                <div>
+                    <label for="sidebar-align">Бокова панель:</label>
+                    <input type="radio" id="sidebar-align" name="alignment" value="left"> Ліво
+                </div>
             </form>
         </div>
 
-        <aside class="sidebar" id="block4">
+        <!-- Правий блок -->
+        <aside class="sidebar">
             <img src="main-page.png" alt="Drift car" style="width:100%;">
-            <p class="caption">Drift car</p>
         </aside>
 
+        <!-- Футер -->
         <footer>
             <ul>
                 <li>Контакти:</li>
@@ -58,82 +70,57 @@
             </ul>
         </footer>
 
+        <!-- Нижній блок -->
         <div class="bottom">
             <h2 id="bottom-text">Швидкість, контроль, емоції – ось що таке дрифтинг!</h2>
         </div>
     </div>
 
-    <form id="alignmentForm">
-        <label><input type="radio" name="align" value="block2"> Вирівняти меню</label>
-        <label><input type="radio" name="align" value="block3"> Вирівняти контент</label>
-        <label><input type="radio" name="align" value="block4"> Вирівняти картинку</label>
-        <button type="button" onclick="alignContent()">Вирівняти</button>
-    </form>
-
     <script>
-        window.onload = function () {
-            // Перевірка збережених вирівнювань при завантаженні сторінки
-            ['block2', 'block3', 'block4'].forEach(function(blockId) {
-                const alignLeft = localStorage.getItem(blockId);
-                if (alignLeft) {
-                    document.getElementById(blockId).classList.add('align-left');
-                }
-            });
+        // Функція для зміни вирівнювання блоків
+        function setAlignment() {
+            // Отримуємо значення вибраного вирівнювання
+            const alignment = document.querySelector('input[name="alignment"]:checked').value;
 
-            // Перевірка cookies
-            const savedNumber = getCookie('reversedNumber');
-            const form = document.getElementById('reverseForm');
-
-            if (savedNumber) {
-                const saveData = confirm(`Збережені дані: ${savedNumber}. Зберегти ці дані?`);
-                if (saveData) {
-                    alert('Cookies активні. Перезавантажте сторінку, щоб побачити форму.');
-                    form.style.display = 'none';
-                } else {
-                    deleteCookie('reversedNumber');
-                    alert('Cookies видалено. Сторінка буде оновлена.');
-                    location.reload();
-                }
+            // Задаємо вирівнювання для блоків
+            document.querySelector('.menu').style.textAlign = alignment;
+            document.querySelector('.content').style.textAlign = alignment;
+            document.querySelector('.sidebar').style.textAlign = alignment;
+            
+            // Додаємо підпис для картинки, якщо вирівнювання по лівому краю
+            const image = document.querySelector('.sidebar img');
+            const caption = document.querySelector('.sidebar .caption');
+            
+            if (alignment === 'left' && !caption) {
+                const newCaption = document.createElement('p');
+                newCaption.classList.add('caption');
+                newCaption.textContent = 'Вирівнювання по лівому краю';
+                image.insertAdjacentElement('afterend', newCaption);
+            } else if (alignment !== 'left' && caption) {
+                caption.remove();
             }
-        };
 
-        function alignContent() {
-            const selectedBlock = document.querySelector('input[name="align"]:checked').value;
-            if (!selectedBlock) return;
-
-            document.getElementById(selectedBlock).classList.add('align-left');
-            localStorage.setItem(selectedBlock, 'left');
+            // Зберігаємо налаштування в localStorage
+            localStorage.setItem('alignment', alignment);
         }
 
-        // Функція для перевертання числа
-        function reverseNumber() {
-            const numberInput = document.getElementById('numberInput').value;
-            if (!numberInput) return;
-
-            const reversed = numberInput.toString().split('').reverse().join('');
-            alert(`Перевернуте число: ${reversed}`);
-
-            setCookie('reversedNumber', reversed, 1);
-        }
-
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-        }
-
-        function getCookie(name) {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                const [key, value] = cookie.trim().split('=');
-                if (key === name) return value;
+        // Функція для відновлення налаштувань вирівнювання з localStorage
+        function restoreAlignment() {
+            const savedAlignment = localStorage.getItem('alignment');
+            if (savedAlignment) {
+                // Встановлюємо відповідне вирівнювання
+                document.querySelector(`input[value="${savedAlignment}"]`).checked = true;
+                setAlignment();
             }
-            return null;
         }
 
-        function deleteCookie(name) {
-            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
-        }
+        // Відновлюємо налаштування при завантаженні сторінки
+        window.onload = restoreAlignment;
+
+        // Додаємо слухачів на радіокнопки для оновлення вирівнювання
+        document.querySelectorAll('input[name="alignment"]').forEach((radio) => {
+            radio.addEventListener('click', setAlignment);
+        });
     </script>
 </body>
 </html>
