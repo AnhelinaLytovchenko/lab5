@@ -60,7 +60,7 @@
                     <input type="radio" name="alignment" value="left"> Вирівнювання по лівому краю
                 </label>
                 <label>
-                    <input type="radio" name="alignment" value="center"> По центру
+                    <input type="radio" name="alignment" value="justify" checked> По ширині
                 </label>
                 <label>
                     <input type="radio" name="alignment" value="right"> По правому краю
@@ -76,11 +76,34 @@
     </div>
 
     <script>
-        // Перевірка наявності cookies при завантаженні сторінки
+        // Функція для обміну текстом між елементами
+        window.onload = function() {
+            const headerText = document.getElementById('header-text');
+            const bottomText = document.getElementById('bottom-text');
+            // Збереження поточного тексту
+            const tempText = headerText.textContent;
+            // Обмін текстом
+            headerText.textContent = bottomText.textContent;
+            bottomText.textContent = tempText;
+
+            // Обчислення площі трапеції
+            function calculateTrapezoidArea() {
+                const a = 10; // Довжина першої основи
+                const b = 15; // Довжина другої основи
+                const h = 8; // Висота трапеції
+                const area = ((a + b) * h) / 2;
+                return area;
+            }
+        // Завантаження сторінки
         window.onload = function () {
+            // Завантаження вирівнювання зі сховища
+            const alignment = localStorage.getItem('alignment') || 'justify'; // За замовчуванням по ширині
+            applyAlignment(alignment);
+            document.querySelector(`input[name="alignment"][value="${alignment}"]`).checked = true;
+
+            // Завантаження збереженого числа (якщо є)
             const savedNumber = getCookie('reversedNumber');
             const form = document.getElementById('reverseForm');
-
             if (savedNumber) {
                 const saveData = confirm(`Збережені дані: ${savedNumber}. Зберегти ці дані?`);
                 if (saveData) {
@@ -91,13 +114,6 @@
                     alert('Cookies видалено. Сторінка буде оновлена.');
                     location.reload();
                 }
-            }
-
-            // Завантаження вирівнювання зі сховища
-            const alignment = localStorage.getItem('alignment');
-            if (alignment) {
-                applyAlignment(alignment);
-                document.querySelector(`input[name="alignment"][value="${alignment}"]`).checked = true;
             }
         };
 
@@ -134,7 +150,7 @@
             document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
         }
 
-        // Новий функціонал для вирівнювання
+        // Функція для застосування вирівнювання
         function applyAlignment(alignment) {
             const elements = ['menu', 'content', 'sidebar'];
             elements.forEach(id => {
@@ -143,6 +159,7 @@
             });
         }
 
+        // Обробник для застосування вирівнювання
         document.getElementById('applyAlignment').addEventListener('click', () => {
             const selectedAlignment = document.querySelector('input[name="alignment"]:checked')?.value;
             if (selectedAlignment) {
