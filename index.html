@@ -15,9 +15,9 @@
                 <h2 class="right" id="header-text">Дрифт - це мистецтво!</h2>
             </div>
         </header>
+
         <!-- Блок меню зліва -->
         <nav class="menu">
-            <!-- Чекбокс для управління меню -->
             <input type="checkbox" id="menu-toggle" class="menu-toggle">
             <label for="menu-toggle" class="menu-title">Меню</label>
             <ul class="menu-list">
@@ -28,21 +28,23 @@
                 <li><a href="cars.html">Автомобілі</a></li>
             </ul>
         </nav>
+
         <!-- Основний контент -->
         <div class="content" id="content">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
-            <p>Дрифтинг – це не просто автоспорт, це мистецтво, яке вражає і захоплює. На нашому сайті ми відкриємо для вас захоплюючий світ дрифту: від його витоків і розвитку до сучасних тенденцій та технік.</p>
-            <form id="numberForm">
-                <label for="numberInput">Введіть число:</label>
-                <input type="number" id="numberInput" required>
-                <button type="submit">Перевернути число</button>
+            <p>Введіть натуральне число, щоб перевернути його:</p>
+            <form id="reverse-form">
+                <input type="number" id="number-input" placeholder="Введіть число" required>
+                <button type="submit">Перевернути</button>
             </form>
         </div>
+
         <!-- Правий блок -->
         <aside class="sidebar">
             <img src="main-page.png" alt="Drift car" style="width:100%;">
         </aside>
+
         <!-- Футер -->
         <footer>
             <ul>
@@ -52,87 +54,66 @@
                 <li>FR legends: @lina & @REVO</li>
             </ul>
         </footer>
-        <!-- Нижній блок -->
-        <div class="bottom">
-            <h2 id="bottom-text">Швидкість, контроль, емоції – ось що таке дрифтинг!</h2>
-        </div>
     </div>
+
     <script>
-        // Функція для обміну текстом між елементами
-        window.onload = function() {
-            const headerText = document.getElementById('header-text');
-            const bottomText = document.getElementById('bottom-text');
-            // Збереження поточного тексту
-            const tempText = headerText.textContent;
-            // Обмін текстом
-            headerText.textContent = bottomText.textContent;
-            bottomText.textContent = tempText;
-
-            // Обчислення площі трапеції
-            function calculateTrapezoidArea() {
-                const a = 10; // Довжина першої основи
-                const b = 15; // Довжина другої основи
-                const h = 8; // Висота трапеції
-                const area = ((a + b) * h) / 2;
-                return area;
-            }
-
-            // Виведення результату в кінці блоку "content"
-            const contentDiv = document.getElementById('content');
-            const resultParagraph = document.createElement('p');
-            resultParagraph.textContent = `Площа трапеції: ${calculateTrapezoidArea()} квадратних одиниць.`;
-            contentDiv.appendChild(resultParagraph);
-
-            // Перевірка наявності cookies
-            const previousNumber = getCookie('reversedNumber');
-            if (previousNumber) {
-                if (confirm(`Збережені дані: ${previousNumber}. Бажаєте залишити їх?`)) {
-                    alert('Дані збережено. Перезавантажте сторінку.');
-                } else {
-                    deleteCookie('reversedNumber');
-                    location.reload();
-                }
-            } else {
-                document.getElementById('numberForm').addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    const number = document.getElementById('numberInput').value;
-                    const reversedNumber = reverseNumber(number);
-                    alert(`Перевернуте число: ${reversedNumber}`);
-                    setCookie('reversedNumber', reversedNumber, 7);
-                    location.reload();
-                });
-            }
-        };
-
-        // Функція для перевертання числа
-        function reverseNumber(number) {
-            return number.toString().split('').reverse().join('');
-        }
-
-        // Функція для збереження cookies
+        // Функція для роботи з cookies
         function setCookie(name, value, days) {
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            const expires = "expires=" + date.toUTCString();
-            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
         }
 
-        // Функція для отримання cookies
         function getCookie(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            const cookies = document.cookie.split(';');
+            for (const cookie of cookies) {
+                const [key, value] = cookie.trim().split('=');
+                if (key === name) {
+                    return value;
+                }
             }
             return null;
         }
 
-        // Функція для видалення cookies
         function deleteCookie(name) {
-            document.cookie = name + '=; Max-Age=-99999999;';
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
         }
+
+        // Перевірка cookies на завантаженні сторінки
+        window.onload = function() {
+            const savedNumber = getCookie('reversedNumber');
+
+            if (savedNumber) {
+                const confirmSave = confirm(`Збережене число: ${savedNumber}. Бажаєте зберегти це значення?`);
+                if (confirmSave) {
+                    alert('Cookies збережені. Перезавантажте сторінку, щоб продовжити.');
+                } else {
+                    deleteCookie('reversedNumber');
+                    alert('Cookies видалені. Сторінка буде оновлена.');
+                    location.reload();
+                }
+                return;
+            }
+
+            // Додаємо логіку для форми
+            const form = document.getElementById('reverse-form');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const input = document.getElementById('number-input').value;
+
+                if (!input || input <= 0) {
+                    alert('Будь ласка, введіть натуральне число.');
+                    return;
+                }
+
+                // Перевертаємо число
+                const reversed = input.split('').reverse().join('');
+                alert(`Перевернуте число: ${reversed}`);
+
+                // Зберігаємо у cookies
+                setCookie('reversedNumber', reversed, 1);
+            });
+        };
     </script>
 </body>
 </html>
