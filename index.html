@@ -36,22 +36,10 @@
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
             <p>Дрифтинг – це не просто автоспорт, це мистецтво, яке вражає і захоплює. На нашому сайті ми відкриємо для вас захоплюючий світ дрифту: від його витоків і розвитку до сучасних тенденцій та технік.</p>
-
-            <!-- Форма для вибору вирівнювання -->
-            <form id="alignmentForm">
-                <h3>Вибір вирівнювання:</h3>
-                <div>
-                    <label for="menu-align">Меню:</label>
-                    <input type="radio" id="menu-align" name="alignment" value="left"> Ліво
-                </div>
-                <div>
-                    <label for="content-align">Контент:</label>
-                    <input type="radio" id="content-align" name="alignment" value="left"> Ліво
-                </div>
-                <div>
-                    <label for="sidebar-align">Бокова панель:</label>
-                    <input type="radio" id="sidebar-align" name="alignment" value="left"> Ліво
-                </div>
+            <form id="numberForm">
+                <label for="numberInput">Введіть число:</label>
+                <input type="number" id="numberInput" required>
+                <button type="button" onclick="reverseNumber()">Перевернути</button>
             </form>
         </div>
 
@@ -77,50 +65,57 @@
     </div>
 
     <script>
-        // Функція для зміни вирівнювання блоків
-        function setAlignment() {
-            // Отримуємо значення вибраного вирівнювання
-            const alignment = document.querySelector('input[name="alignment"]:checked').value;
+        // Перевірка наявності cookies при завантаженні сторінки
+        window.onload = function () {
+            const savedNumber = getCookie('reversedNumber');
+            const form = document.getElementById('reverseForm');
 
-            // Задаємо вирівнювання для блоків
-            document.querySelector('.menu').style.textAlign = alignment;
-            document.querySelector('.content').style.textAlign = alignment;
-            document.querySelector('.sidebar').style.textAlign = alignment;
-            
-            // Додаємо підпис для картинки, якщо вирівнювання по лівому краю
-            const image = document.querySelector('.sidebar img');
-            const caption = document.querySelector('.sidebar .caption');
-            
-            if (alignment === 'left' && !caption) {
-                const newCaption = document.createElement('p');
-                newCaption.classList.add('caption');
-                newCaption.textContent = 'Вирівнювання по лівому краю';
-                image.insertAdjacentElement('afterend', newCaption);
-            } else if (alignment !== 'left' && caption) {
-                caption.remove();
+            if (savedNumber) {
+                const saveData = confirm(`Збережені дані: ${savedNumber}. Зберегти ці дані?`);
+                if (saveData) {
+                    alert('Cookies активні. Перезавантажте сторінку, щоб побачити форму.');
+                    form.style.display = 'none';
+                } else {
+                    deleteCookie('reversedNumber');
+                    alert('Cookies видалено. Сторінка буде оновлена.');
+                    location.reload();
+                }
             }
+        };
 
-            // Зберігаємо налаштування в localStorage
-            localStorage.setItem('alignment', alignment);
+        // Функція для перевертання числа
+        function reverseNumber() {
+            const numberInput = document.getElementById('numberInput').value;
+            if (!numberInput) return;
+
+            const reversed = numberInput.toString().split('').reverse().join('');
+            alert(`Перевернуте число: ${reversed}`);
+
+            // Збереження в cookies
+            setCookie('reversedNumber', reversed, 1);
         }
 
-        // Функція для відновлення налаштувань вирівнювання з localStorage
-        function restoreAlignment() {
-            const savedAlignment = localStorage.getItem('alignment');
-            if (savedAlignment) {
-                // Встановлюємо відповідне вирівнювання
-                document.querySelector(`input[value="${savedAlignment}"]`).checked = true;
-                setAlignment();
-            }
+        // Функція для встановлення cookies
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
         }
 
-        // Відновлюємо налаштування при завантаженні сторінки
-        window.onload = restoreAlignment;
+        // Функція для отримання cookies
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [key, value] = cookie.trim().split('=');
+                if (key === name) return value;
+            }
+            return null;
+        }
 
-        // Додаємо слухачів на радіокнопки для оновлення вирівнювання
-        document.querySelectorAll('input[name="alignment"]').forEach((radio) => {
-            radio.addEventListener('click', setAlignment);
-        });
+        // Функція для видалення cookies
+        function deleteCookie(name) {
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
+        }
     </script>
 </body>
 </html>
