@@ -99,90 +99,56 @@ header .x-header h2.right {
     text-decoration: none;
     color: #64403E;
     font-size: 1em;
-    transition: background-color 0.3s, color 0.3s;
+    font-weight: 500;
 }
 
-.menu-list a:hover {
-    background-color: #64403E;
-    color: #F5F5DC;
-}
-
-/* Показати меню при активному чекбоксі */
-.menu-toggle:checked ~ .menu-list {
+.menu-toggle:checked + .menu-title + .menu-list {
     display: block;
 }
 
-/* Основний контент */
+/* Контент */
 .content {
     grid-area: content;
-    background-color: #E1E5D8;
-    padding: 25px;
-    overflow-y: auto;
-    text-align: justify;
-}
-.content h2 {
-    margin-bottom: 15px;
-    font-size: 1.4em;
-    color: #333;
-    font-weight: bold;
+    background-color: #F4F7F2;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Бокова панель */
 .sidebar {
     grid-area: sidebar;
-    background-color: #C9CEBD;
-    padding: 15px;
-    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+    background-color: #F4F7F2;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Футер */
 footer {
     grid-area: footer;
-    background-color: #707B73;
-    padding: 3px;
-    text-align: right;
+    background-color: #333;
     color: #F5F5DC;
-    font-size: 0.8em;
-    font-weight: 300;
+    padding: 20px;
+    text-align: center;
 }
+
+/* Нижній блок */
 .bottom {
     grid-area: bottom;
-    background-color: #6C6061;
-    padding: 15px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    background-color: #F4F7F2;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-.bottom h2 {
-    margin: 0;
-    background-color: #E1E5D8;
-    padding: 8px 12px;
-    border-radius: 5px;
-    font-size: 1.2em;
-    font-weight: bold;
+
+/* Стилі для підпису до картинки */
+.sidebar img {
+    width: 100%;
+    display: block;
+}
+
+.sidebar .caption {
+    text-align: left;
+    font-size: 0.9em;
     color: #333;
-}
-
-/* Адаптація для мобільних пристроїв */
-@media (max-width: 768px) {
-    .container {
-        display: flex;
-        flex-direction: column;
-        height: auto;
-    }
-
-    .menu {
-        text-align: left;
-        padding: 10px;
-    }
-
-    .menu-title {
-        width: 100%;
-        display: block;
-    }
-
-    .menu-list {
-        position: static;
-        box-shadow: none;
-    }
+    margin-top: 10px;
 }
