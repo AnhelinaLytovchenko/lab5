@@ -33,11 +33,9 @@
         <div class="content" id="content">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
-            <form id="reverseForm">
-                <label for="numberInput">Введіть число:</label>
-                <input type="number" id="numberInput" required>
-                <button type="button" onclick="reverseNumber()">Перевернути</button>
-            </form>
+            <div id="trapezoid-area-result" style="margin-top: 20px; font-size: 1.2em; font-weight: bold;">
+                <!-- Тут буде відображено результат -->
+            </div>
         </div>
 
         <!-- Правий блок -->
@@ -54,19 +52,6 @@
                 <li>driftloversUA@gmail.com</li>
                 <li>FR legends: @lina & @REVO</li>
             </ul>
-            <!-- Радіокнопки для вирівнювання -->
-            <form id="alignmentForm">
-                <label>
-                    <input type="radio" name="alignment" value="left"> Вирівнювання по лівому краю
-                </label>
-                <label>
-                    <input type="radio" name="alignment" value="justify" checked> По ширині
-                </label>
-                <label>
-                    <input type="radio" name="alignment" value="right"> По правому краю
-                </label>
-                <button type="button" id="applyAlignment">Застосувати</button>
-            </form>
         </footer>
 
         <!-- Нижній блок -->
@@ -76,81 +61,31 @@
     </div>
 
     <script>
-        // Функція для обміну текстом між елементами
-        window.onload = function() {
-            const headerText = document.getElementById('header-text');
-            const bottomText = document.getElementById('bottom-text');
-            // Збереження поточного тексту
-            const tempText = headerText.textContent;
-            // Обмін текстом
-            headerText.textContent = bottomText.textContent;
-            bottomText.textContent = tempText;
-
-            // Обчислення площі трапеції
-            function calculateTrapezoidArea() {
-                const a = 10; // Довжина першої основи
-                const b = 15; // Довжина другої основи
-                const h = 8; // Висота трапеції
-                const area = ((a + b) * h) / 2;
-                return area;
-            }
         // Завантаження сторінки
         window.onload = function () {
-            // Завантаження вирівнювання зі сховища
-            const alignment = localStorage.getItem('alignment') || 'justify'; // За замовчуванням по ширині
-            applyAlignment(alignment);
-            document.querySelector(`input[name="alignment"][value="${alignment}"]`).checked = true;
+            // Обмін текстом між елементами
+            const headerText = document.getElementById('header-text');
+            const bottomText = document.getElementById('bottom-text');
+            const tempText = headerText.textContent; // Збереження поточного тексту
+            headerText.textContent = bottomText.textContent; // Обмін
+            bottomText.textContent = tempText;
 
-            // Завантаження збереженого числа (якщо є)
-            const savedNumber = getCookie('reversedNumber');
-            const form = document.getElementById('reverseForm');
-            if (savedNumber) {
-                const saveData = confirm(`Збережені дані: ${savedNumber}. Зберегти ці дані?`);
-                if (saveData) {
-                    alert('Cookies активні. Перезавантажте сторінку, щоб побачити форму.');
-                    form.style.display = 'none';
-                } else {
-                    deleteCookie('reversedNumber');
-                    alert('Cookies видалено. Сторінка буде оновлена.');
-                    location.reload();
-                }
-            }
+            // Обчислення площі трапеції та виведення на сторінку
+            const trapezoidArea = calculateTrapezoidArea();
+            const resultElement = document.getElementById('trapezoid-area-result');
+            resultElement.textContent = `Площа трапеції: ${trapezoidArea}`;
         };
 
-        // Функція для перевертання числа
-        function reverseNumber() {
-            const numberInput = document.getElementById('numberInput').value;
-            if (!numberInput) return;
-
-            const reversed = numberInput.toString().split('').reverse().join('');
-            alert(`Перевернуте число: ${reversed}`);
-
-            setCookie('reversedNumber', reversed, 1);
+        // Функція для обчислення площі трапеції
+        function calculateTrapezoidArea() {
+            const a = 10; // Довжина першої основи
+            const b = 15; // Довжина другої основи
+            const h = 8; // Висота трапеції
+            const area = ((a + b) * h) / 2;
+            return area;
         }
 
-        // Функція для встановлення cookies
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-        }
-
-        // Функція для отримання cookies
-        function getCookie(name) {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                const [key, value] = cookie.trim().split('=');
-                if (key === name) return value;
-            }
-            return null;
-        }
-
-        // Функція для видалення cookies
-        function deleteCookie(name) {
-            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
-        }
-
-        // Функція для застосування вирівнювання
+        // Логіка для застосування вирівнювання
         function applyAlignment(alignment) {
             const elements = ['menu', 'content', 'sidebar'];
             elements.forEach(id => {
@@ -159,14 +94,22 @@
             });
         }
 
-        // Обробник для застосування вирівнювання
-        document.getElementById('applyAlignment').addEventListener('click', () => {
+        // Слухач для кнопки застосування вирівнювання
+        document.getElementById('applyAlignment')?.addEventListener('click', () => {
             const selectedAlignment = document.querySelector('input[name="alignment"]:checked')?.value;
             if (selectedAlignment) {
                 applyAlignment(selectedAlignment);
                 localStorage.setItem('alignment', selectedAlignment);
             } else {
                 alert('Оберіть варіант вирівнювання.');
+            }
+        });
+
+        // Відновлення вирівнювання з localStorage
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedAlignment = localStorage.getItem('alignment');
+            if (savedAlignment) {
+                applyAlignment(savedAlignment);
             }
         });
     </script>
