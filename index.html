@@ -17,12 +17,12 @@
         </header>
 
         <!-- Блок меню зліва -->
-        <nav class="menu">
+        <nav class="menu" id="block2">
             <!-- Чекбокс для управління меню -->
             <input type="checkbox" id="menu-toggle" class="menu-toggle">
             <label for="menu-toggle" class="menu-title">Меню</label>
             <ul class="menu-list">
-                <li><a href="index.html">Головна</a></li>
+                <li><a href="index2.html">Головна</a></li>
                 <li><a href="about.html">Що таке дрифт?</a></li>
                 <li><a href="history.html">Історія</a></li>
                 <li><a href="rating.html">Оцінювання змагань</a></li>
@@ -31,19 +31,23 @@
         </nav>
 
         <!-- Основний контент -->
-        <div class="content" id="content">
+        <div class="content" id="block3">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
-            <form id="reverseForm">
-                <label for="numberInput">Введіть число:</label>
-                <input type="number" id="numberInput" required>
-                <button type="button" onclick="reverseNumber()">Перевернути</button>
+            <form id="alignmentForm">
+                <fieldset>
+                    <legend>Налаштування вирівнювання:</legend>
+                    <label><input type="radio" name="alignment" value="2" onclick="setAlignment('block2')"> Вирівняти блок 2</label><br>
+                    <label><input type="radio" name="alignment" value="3" onclick="setAlignment('block3')"> Вирівняти блок 3</label><br>
+                    <label><input type="radio" name="alignment" value="4" onclick="setAlignment('block4')"> Вирівняти блок 4</label>
+                </fieldset>
             </form>
         </div>
 
         <!-- Правий блок -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="block4">
             <img src="main-page.png" alt="Drift car" style="width:100%;">
+            <p>Це підпис до зображення автомобіля для дрифту.</p>
         </aside>
 
         <!-- Футер -->
@@ -63,57 +67,23 @@
     </div>
 
     <script>
-        // Перевірка наявності cookies при завантаженні сторінки
+        // Встановлення вирівнювання і збереження у localStorage
+        function setAlignment(blockId) {
+            const block = document.getElementById(blockId);
+            block.style.textAlign = 'left';
+            localStorage.setItem(blockId, 'left');
+        }
+
+        // Відновлення вирівнювання з localStorage при завантаженні сторінки
         window.onload = function () {
-            const savedNumber = getCookie('reversedNumber');
-            const form = document.getElementById('reverseForm');
-
-            if (savedNumber) {
-                const saveData = confirm(`Збережені дані: ${savedNumber}. Зберегти ці дані?`);
-                if (saveData) {
-                    alert('Cookies активні. Перезавантажте сторінку, щоб побачити форму.');
-                    form.style.display = 'none';
-                } else {
-                    deleteCookie('reversedNumber');
-                    alert('Cookies видалено. Сторінка буде оновлена.');
-                    location.reload();
+            ['block2', 'block3', 'block4'].forEach(blockId => {
+                const alignment = localStorage.getItem(blockId);
+                if (alignment) {
+                    const block = document.getElementById(blockId);
+                    block.style.textAlign = alignment;
                 }
-            }
+            });
         };
-
-        // Функція для перевертання числа
-        function reverseNumber() {
-            const numberInput = document.getElementById('numberInput').value;
-            if (!numberInput) return;
-
-            const reversed = numberInput.toString().split('').reverse().join('');
-            alert(`Перевернуте число: ${reversed}`);
-
-            // Збереження в cookies
-            setCookie('reversedNumber', reversed, 1);
-        }
-
-        // Функція для встановлення cookies
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-        }
-
-        // Функція для отримання cookies
-        function getCookie(name) {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                const [key, value] = cookie.trim().split('=');
-                if (key === name) return value;
-            }
-            return null;
-        }
-
-        // Функція для видалення cookies
-        function deleteCookie(name) {
-            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
-        }
     </script>
 </body>
 </html>
