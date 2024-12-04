@@ -36,7 +36,7 @@
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
             <p>Дрифтинг – це не просто автоспорт, це мистецтво, яке вражає і захоплює. На нашому сайті ми відкриємо для вас захоплюючий світ дрифту: від його витоків і розвитку до сучасних тенденцій та технік.</p>
-            
+
             <!-- Форма для вибору вирівнювання -->
             <form id="alignmentForm">
                 <h3>Вибір вирівнювання:</h3>
@@ -77,31 +77,6 @@
     </div>
 
     <script>
-        // Перевірка наявності cookies при завантаженні сторінки
-        window.onload = function () {
-            const savedNumber = getCookie('reversedNumber');
-            const form = document.getElementById('reverseForm');
-
-            if (savedNumber) {
-                const saveData = confirm(`Збережені дані: ${savedNumber}. Зберегти ці дані?`);
-                if (saveData) {
-                    alert('Cookies активні. Перезавантажте сторінку, щоб побачити форму.');
-                    form.style.display = 'none';
-                } else {
-                    deleteCookie('reversedNumber');
-                    alert('Cookies видалено. Сторінка буде оновлена.');
-                    location.reload();
-                }
-            }
-
-            // Відновлюємо налаштування вирівнювання з localStorage
-            const savedAlignment = localStorage.getItem('alignment');
-            if (savedAlignment) {
-                document.querySelector(`input[value="${savedAlignment}"]`).checked = true;
-                setAlignment();
-            }
-        };
-
         // Функція для зміни вирівнювання блоків
         function setAlignment() {
             // Отримуємо значення вибраного вирівнювання
@@ -129,44 +104,23 @@
             localStorage.setItem('alignment', alignment);
         }
 
+        // Функція для відновлення налаштувань вирівнювання з localStorage
+        function restoreAlignment() {
+            const savedAlignment = localStorage.getItem('alignment');
+            if (savedAlignment) {
+                // Встановлюємо відповідне вирівнювання
+                document.querySelector(`input[value="${savedAlignment}"]`).checked = true;
+                setAlignment();
+            }
+        }
+
+        // Відновлюємо налаштування при завантаженні сторінки
+        window.onload = restoreAlignment;
+
         // Додаємо слухачів на радіокнопки для оновлення вирівнювання
         document.querySelectorAll('input[name="alignment"]').forEach((radio) => {
             radio.addEventListener('click', setAlignment);
         });
-
-        // Функція для перевертання числа
-        function reverseNumber() {
-            const numberInput = document.getElementById('numberInput').value;
-            if (!numberInput) return;
-
-            const reversed = numberInput.toString().split('').reverse().join('');
-            alert(`Перевернуте число: ${reversed}`);
-
-            // Збереження в cookies
-            setCookie('reversedNumber', reversed, 1);
-        }
-
-        // Функція для встановлення cookies
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-        }
-
-        // Функція для отримання cookies
-        function getCookie(name) {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                const [key, value] = cookie.trim().split('=');
-                if (key === name) return value;
-            }
-            return null;
-        }
-
-        // Функція для видалення cookies
-        function deleteCookie(name) {
-            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
-        }
     </script>
 </body>
 </html>

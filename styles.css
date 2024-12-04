@@ -105,3 +105,50 @@ header .x-header h2.right {
 .menu-toggle:checked + .menu-title + .menu-list {
     display: block;
 }
+
+/* Контент */
+.content {
+    grid-area: content;
+    background-color: #F4F7F2;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Бокова панель */
+.sidebar {
+    grid-area: sidebar;
+    background-color: #F4F7F2;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Футер */
+footer {
+    grid-area: footer;
+    background-color: #333;
+    color: #F5F5DC;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Нижній блок */
+.bottom {
+    grid-area: bottom;
+    background-color: #F4F7F2;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Стилі для підпису до картинки */
+.sidebar img {
+    width: 100%;
+    display: block;
+}
+
+.sidebar .caption {
+    text-align: left;
+    font-size: 0.9em;
+    color: #333;
+    margin-top: 10px;
+}
