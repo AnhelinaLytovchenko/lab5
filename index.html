@@ -73,94 +73,57 @@
         <div class="bottom">
             <h2 id="bottom-text">Швидкість, контроль, емоції – ось що таке дрифтинг!</h2>
         </div>
-
-        <!-- Блоки для додавання списку -->
-        <div class="block" id="block1" tabindex="0">
-            <h3>Блок 1</h3>
-            <ol id="list1"></ol>
-            <button id="save1">Зберегти</button>
-        </div>
-        <div class="block" id="block2" tabindex="0">
-            <h3>Блок 2</h3>
-            <ol id="list2"></ol>
-            <button id="save2">Зберегти</button>
-        </div>
-
     </div>
 
     <script>
+        // Завантаження сторінки
         window.onload = function () {
-            // Завантаження збережених списків
-            loadListFromLocalStorage();
-
-            // Обробка фокусу на кожному блоці
-            const blocks = document.querySelectorAll('.block');
-            blocks.forEach(block => {
-                block.addEventListener('focus', function () {
-                    const list = block.querySelector('ol');
-                    const newItem = document.createElement('li');
-                    newItem.contentEditable = true;  // Дозволяє редагувати текст
-                    newItem.textContent = 'Нове завдання';
-                    
-                    // Додавання кнопки для видалення елемента
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Видалити';
-                    deleteButton.addEventListener('click', () => {
-                        deleteListItem(block.id, list, newItem);
-                    });
-                    newItem.appendChild(deleteButton);
-                    list.appendChild(newItem);
-                }, true);
-            });
-
-            // Функція для збереження списку в localStorage
-            function saveListToLocalStorage(blockId, list) {
-                const items = [];
-                list.querySelectorAll('li').forEach(item => {
-                    items.push(item.textContent.replace('Видалити', '').trim());
-                });
-                localStorage.setItem(blockId, JSON.stringify(items));
+            // Обмін текстом між елементами
+            const headerText = document.getElementById('header-text');
+            const bottomText = document.getElementById('bottom-text');
+            const tempText = headerText.textContent;
+            headerText.textContent = bottomText.textContent;
+            bottomText.textContent = tempText;
+    
+            // Обчислення площі трапеції
+            function calculateTrapezoidArea() {
+                const a = 10; // Довжина першої основи
+                const b = 15; // Довжина другої основи
+                const h = 8; // Висота трапеції
+                const area = ((a + b) * h) / 2;
+    
+                // Додавання результату в кінець блоку "контент"
+                const contentElement = document.getElementById('content');
+                const areaText = document.createElement('p');
+                areaText.textContent = `Площа трапеції: ${area}`;
+                areaText.style.fontWeight = 'bold';
+                contentElement.appendChild(areaText);
             }
-
-            // Завантаження списків із localStorage
-            function loadListFromLocalStorage() {
-                blocks.forEach(block => {
-                    const blockId = block.id;
-                    const savedItems = JSON.parse(localStorage.getItem(blockId));
-                    if (savedItems) {
-                        const list = block.querySelector('ol');
-                        savedItems.forEach(item => {
-                            const listItem = document.createElement('li');
-                            listItem.contentEditable = true;
-                            listItem.textContent = item;
-                            const deleteButton = document.createElement('button');
-                            deleteButton.textContent = 'Видалити';
-                            deleteButton.addEventListener('click', () => {
-                                deleteListItem(blockId, list, listItem);
-                            });
-                            listItem.appendChild(deleteButton);
-                            list.appendChild(listItem);
-                        });
-                    }
-                });
+    
+            // Виклик функції обчислення площі трапеції
+            calculateTrapezoidArea();
+    
+            // Завантаження вирівнювання зі сховища
+            const alignment = localStorage.getItem('alignment') || 'justify'; // За замовчуванням по ширині
+            applyAlignment(alignment);
+            document.querySelector(`input[name="alignment"][value="${alignment}"]`).checked = true;
+    
+            // Завантаження збереженого числа (якщо є)
+            const savedNumber = getCookie('reversedNumber');
+            const form = document.getElementById('reverseForm');
+            if (savedNumber) {
+                const saveData = confirm(`Збережені дані: ${savedNumber}. Зберегти ці дані?`);
+                if (saveData) {
+                    alert('Cookies активні. Перезавантажте сторінку, щоб побачити форму.');
+                    form.style.display = 'none';
+                } else {
+                    deleteCookie('reversedNumber');
+                    alert('Cookies видалено. Сторінка буде оновлена.');
+                    location.reload();
+                }
             }
-
-            // Видалення елемента зі списку та оновлення localStorage
-            function deleteListItem(blockId, list, listItem) {
-                list.removeChild(listItem);
-                saveListToLocalStorage(blockId, list);
-            }
-
-            // Обробник для кнопки "Зберегти"
-            document.querySelectorAll('button[id^="save"]').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const blockId = event.target.id.replace('save', '');
-                    const list = document.getElementById(blockId).querySelector('ol');
-                    saveListToLocalStorage(blockId, list);
-                });
-            });
         };
-
+    
         // Функція для перевертання числа
         function reverseNumber() {
             const numberInput = document.getElementById('numberInput').value;
