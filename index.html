@@ -15,6 +15,10 @@
                 <h2 class="right" id="header-text">Дрифт - це мистецтво!</h2>
             </div>
             <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Header)</a>
+            <div class="addItemForm" style="display: none;">
+                <input type="text" class="newItemText" placeholder="Введіть новий елемент" />
+                <button class="addItemButton">Додати</button>
+            </div>
         </header>
 
         <!-- Блок меню зліва -->
@@ -29,6 +33,10 @@
                 <li><a href="cars.html">Автомобілі</a></li>
             </ul>
             <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Menu)</a>
+            <div class="addItemForm" style="display: none;">
+                <input type="text" class="newItemText" placeholder="Введіть новий елемент" />
+                <button class="addItemButton">Додати</button>
+            </div>
         </nav>
 
         <!-- Основний контент -->
@@ -37,14 +45,6 @@
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
 
             <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Content)</a>
-
-            <div id="addItemForm" style="display: none;">
-                <input type="text" id="newItemText" placeholder="Введіть новий елемент" />
-                <button type="button" id="addItemButton">Додати</button>
-            </div>
-
-            <h2>Створіть нумерований список!</h2>
-            <p>Натисніть на посилання, щоб додати елементи до списку.</p>
 
             <div id="numberedListBlock" class="numbered-list-block">
                 <ol id="numberedList"></ol>
@@ -61,17 +61,24 @@
                 <li>FR legends: @lina & @REVO</li>
             </ul>
             <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Footer)</a>
+            <div class="addItemForm" style="display: none;">
+                <input type="text" class="newItemText" placeholder="Введіть новий елемент" />
+                <button class="addItemButton">Додати</button>
+            </div>
         </footer>
 
         <!-- Нижній блок -->
         <div class="bottom">
             <h2 id="bottom-text">Швидкість, контроль, емоції – ось що таке дрифтинг!</h2>
             <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Bottom)</a>
+            <div class="addItemForm" style="display: none;">
+                <input type="text" class="newItemText" placeholder="Введіть новий елемент" />
+                <button class="addItemButton">Додати</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Завантаження сторінки
         window.onload = function () {
             const savedList = JSON.parse(localStorage.getItem('numberedList')) || [];
             const numberedList = document.getElementById('numberedList');
@@ -79,25 +86,29 @@
                 addListItemToDOM(item);
             });
 
-            // Обробник події для всіх посилань на сторінці
+            // Обробка події для всіх посилань на сторінці
             const links = document.querySelectorAll('.add-item-link');
             links.forEach(link => {
-                link.addEventListener('focus', () => {
-                    // Показуємо форму для додавання елемента
-                    document.getElementById('addItemForm').style.display = 'block';
+                link.addEventListener('focus', (event) => {
+                    const form = event.target.closest('a').nextElementSibling;
+                    form.style.display = 'block'; // Показуємо форму для поточного посилання
                 });
             });
 
             // Обробник для кнопки додавання елементу
-            document.getElementById('addItemButton').addEventListener('click', () => {
-                const newItem = document.getElementById('newItemText').value.trim();
-                if (newItem) {
-                    savedList.push(newItem);
-                    addListItemToDOM(newItem);
-                    localStorage.setItem('numberedList', JSON.stringify(savedList));
-                    document.getElementById('addItemForm').style.display = 'none';
-                    document.getElementById('newItemText').value = ''; // Очищаємо поле
-                }
+            const addButtons = document.querySelectorAll('.addItemButton');
+            addButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const form = event.target.closest('.addItemForm');
+                    const newItem = form.querySelector('.newItemText').value.trim();
+                    if (newItem) {
+                        savedList.push(newItem);
+                        addListItemToDOM(newItem);
+                        localStorage.setItem('numberedList', JSON.stringify(savedList));
+                        form.style.display = 'none'; // Ховаємо форму після додавання
+                        form.querySelector('.newItemText').value = ''; // Очищаємо поле
+                    }
+                });
             });
 
             // Функція для додавання елемента до DOM
