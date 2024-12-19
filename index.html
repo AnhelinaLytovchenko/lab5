@@ -8,6 +8,7 @@
 </head>
 <body>
     <div class="container">
+        <!-- Верхній блок з заголовком -->
         <header>
             <h1 class="left">Дрифт: коротко про головне</h1>
             <div class="x-header">
@@ -15,6 +16,7 @@
             </div>
         </header>
 
+        <!-- Блок меню зліва -->
         <nav class="menu" id="menu">
             <input type="checkbox" id="menu-toggle" class="menu-toggle">
             <label for="menu-toggle" class="menu-title">Меню</label>
@@ -27,16 +29,41 @@
             </ul>
         </nav>
 
+        <!-- Основний контент -->
         <div class="content" id="content">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
+            <form id="reverseForm">
+                <label for="numberInput">Введіть число:</label>
+                <input type="number" id="numberInput" required>
+                <button type="button" onclick="reverseNumber()">Перевернути</button>
+            </form>
+
+            <!-- Нумеровані блоки для списків -->
+            <div id="numberedBlocks">
+                <div id="block1" class="numbered-block" tabindex="0">Блок 1</div>
+                <div id="block2" class="numbered-block" tabindex="0">Блок 2</div>
+                <div id="block3" class="numbered-block" tabindex="0">Блок 3</div>
+                <div id="block4" class="numbered-block" tabindex="0">Блок 4</div>
+                <div id="block5" class="numbered-block" tabindex="0">Блок 5</div>
+                <div id="block6" class="numbered-block" tabindex="0">Блок 6</div>
+            </div>
+
+            <!-- Форма для додавання елементів списку -->
+            <div id="listForm" style="display: none;">
+                <input type="text" id="listItemInput" placeholder="Введіть елемент">
+                <button id="addToList">Додати</button>
+                <button id="saveList">Зберегти список</button>
+            </div>
         </div>
 
+        <!-- Правий блок -->
         <aside class="sidebar" id="sidebar">
             <img src="main-page.png" alt="Drift car" style="width:100%;">
             <p>Текст для перевірки вирівнювання.</p>
         </aside>
 
+        <!-- Футер -->
         <footer>
             <ul>
                 <li>Контакти:</li>
@@ -44,8 +71,22 @@
                 <li>driftloversUA@gmail.com</li>
                 <li>FR legends: @lina & @REVO</li>
             </ul>
+            <!-- Радіокнопки для вирівнювання -->
+            <form id="alignmentForm">
+                <label>
+                    <input type="radio" name="alignment" value="left"> Вирівнювання по лівому краю
+                </label>
+                <label>
+                    <input type="radio" name="alignment" value="justify" checked> По ширині
+                </label>
+                <label>
+                    <input type="radio" name="alignment" value="right"> По правому краю
+                </label>
+                <button type="button" id="applyAlignment">Застосувати</button>
+            </form>
         </footer>
 
+        <!-- Нижній блок -->
         <div class="bottom">
             <h2 id="bottom-text">Швидкість, контроль, емоції – ось що таке дрифтинг!</h2>
         </div>
@@ -68,6 +109,7 @@
                 const h = 8; // Висота трапеції
                 const area = ((a + b) * h) / 2;
 
+                // Додавання результату в кінець блоку "контент"
                 const contentElement = document.getElementById('content');
                 const areaText = document.createElement('p');
                 areaText.textContent = `Площа трапеції: ${area}`;
@@ -75,12 +117,15 @@
                 contentElement.appendChild(areaText);
             }
 
+            // Виклик функції обчислення площі трапеції
             calculateTrapezoidArea();
 
-            const alignment = localStorage.getItem('alignment') || 'justify';
+            // Завантаження вирівнювання зі сховища
+            const alignment = localStorage.getItem('alignment') || 'justify'; // За замовчуванням по ширині
             applyAlignment(alignment);
             document.querySelector(`input[name="alignment"][value="${alignment}"]`).checked = true;
 
+            // Завантаження збереженого числа (якщо є)
             const savedNumber = getCookie('reversedNumber');
             const form = document.getElementById('reverseForm');
             if (savedNumber) {
@@ -95,12 +140,63 @@
                 }
             }
 
-            document.getElementById('saveListButton').addEventListener('click', () => {
-                localStorage.setItem('numberedList', JSON.stringify(savedList));
-                alert('Список збережено!');
+            // Обробка нумерованих блоків
+            const numberedBlocks = document.querySelectorAll('.numbered-block');
+            numberedBlocks.forEach(block => {
+                block.addEventListener('focus', () => {
+                    const listForm = document.getElementById('listForm');
+                    listForm.style.display = 'block';
+                    const currentBlockId = block.id;
+
+                    const savedList = JSON.parse(localStorage.getItem(currentBlockId)) || [];
+                    const listElement = document.createElement('ol');
+                    savedList.forEach(item => {
+                        addListItemToDOM(item, listElement, currentBlockId);
+                    });
+
+                    block.innerHTML = '';
+                    block.appendChild(listElement);
+                    block.appendChild(listForm);
+
+                    document.getElementById('addToList').onclick = () => {
+                        const listItemInput = document.getElementById('listItemInput').value.trim();
+                        if (listItemInput) {
+                            savedList.push(listItemInput);
+                            addListItemToDOM(listItemInput, listElement, currentBlockId);
+                            document.getElementById('listItemInput').value = '';
+                        }
+                    };
+
+                    document.getElementById('saveList').onclick = () => {
+                        localStorage.setItem(currentBlockId, JSON.stringify(savedList));
+                        alert('Список збережено!');
+                    };
+                });
             });
+
+            // Функція для додавання елементу до DOM
+            function addListItemToDOM(item, listElement, blockId) {
+                const li = document.createElement('li');
+                li.textContent = item;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Видалити';
+                deleteButton.onclick = () => {
+                    const savedList = JSON.parse(localStorage.getItem(blockId)) || [];
+                    const index = savedList.indexOf(item);
+                    if (index > -1) {
+                        savedList.splice(index, 1);
+                        localStorage.setItem(blockId, JSON.stringify(savedList));
+                        li.remove();
+                    }
+                };
+
+                li.appendChild(deleteButton);
+                listElement.appendChild(li);
+            }
         };
 
+        // Функція для перевертання числа
         function reverseNumber() {
             const numberInput = document.getElementById('numberInput').value;
             if (!numberInput) return;
@@ -111,12 +207,14 @@
             setCookie('reversedNumber', reversed, 1);
         }
 
+        // Функція для встановлення cookies
         function setCookie(name, value, days) {
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
         }
 
+        // Функція для отримання cookies
         function getCookie(name) {
             const cookies = document.cookie.split(';');
             for (let cookie of cookies) {
@@ -126,11 +224,14 @@
             return null;
         }
 
+        // Функція для видалення cookies
         function deleteCookie(name) {
             document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
         }
 
+        // Застосування вирівнювання
         function applyAlignment(alignment) {
+            // Застосовуємо вирівнювання до всіх основних елементів
             const elements = ['menu', 'content', 'sidebar', 'numberedList'];
             elements.forEach(id => {
                 const element = document.getElementById(id);
@@ -141,6 +242,7 @@
             localStorage.setItem('alignment', alignment);
         }
 
+        // Обробник для кнопки "Застосувати вирівнювання"
         document.getElementById('applyAlignment').addEventListener('click', () => {
             const selectedAlignment = document.querySelector('input[name="alignment"]:checked').value;
             applyAlignment(selectedAlignment);
