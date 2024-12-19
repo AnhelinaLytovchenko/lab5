@@ -76,106 +76,176 @@
     </div>
 
     <script>
-        // Завантаження сторінки
-        window.onload = function () {
-            // Обмін текстом між елементами
-            const headerText = document.getElementById('header-text');
-            const bottomText = document.getElementById('bottom-text');
-            const tempText = headerText.textContent;
-            headerText.textContent = bottomText.textContent;
-            bottomText.textContent = tempText;
-    
-            // Обчислення площі трапеції
-            function calculateTrapezoidArea() {
-                const a = 10; // Довжина першої основи
-                const b = 15; // Довжина другої основи
-                const h = 8; // Висота трапеції
-                const area = ((a + b) * h) / 2;
-    
-                // Додавання результату в кінець блоку "контент"
-                const contentElement = document.getElementById('content');
-                const areaText = document.createElement('p');
-                areaText.textContent = `Площа трапеції: ${area}`;
-                areaText.style.fontWeight = 'bold';
-                contentElement.appendChild(areaText);
+        document.addEventListener("DOMContentLoaded", () => {
+            // 1. Поміняти місцями тексти
+            const headerText = document.querySelector(".x-header h2.right");
+            const bottomText = document.querySelector(".bottom h2");
+          
+            if (headerText && bottomText) {
+              const tempText = headerText.textContent;
+              headerText.textContent = bottomText.textContent;
+              bottomText.textContent = tempText;
             }
-    
-            // Виклик функції обчислення площі трапеції
+          
+            // 2. Функція для обчислення площі трапеції
+            const calculateTrapezoidArea = () => {
+              const a = 5; // Довжина першої основи
+              const b = 7; // Довжина другої основи
+              const h = 4; // Висота
+              const area = ((a + b) / 2) * h;
+          
+              const contentBlock = document.querySelector(".content");
+              const resultElement = document.createElement("p");
+              resultElement.textContent = `Площа трапеції: ${area}`;
+              contentBlock.appendChild(resultElement);
+            };
             calculateTrapezoidArea();
-    
-            // Завантаження вирівнювання зі сховища
-            const alignment = localStorage.getItem('alignment') || 'justify'; // За замовчуванням по ширині
-            applyAlignment(alignment);
-            document.querySelector(`input[name="alignment"][value="${alignment}"]`).checked = true;
-    
-            // Завантаження збереженого числа (якщо є)
-            const savedNumber = getCookie('reversedNumber');
-            const form = document.getElementById('reverseForm');
-            if (savedNumber) {
-                const saveData = confirm(`Збережені дані: ${savedNumber}. Зберегти ці дані?`);
-                if (saveData) {
-                    alert('Cookies активні. Перезавантажте сторінку, щоб побачити форму.');
-                    form.style.display = 'none';
+          
+            // 3. Перевернути число та робота з cookies
+            const handleNumberReverse = () => {
+              const form = document.createElement("form");
+              const input = document.createElement("input");
+              const button = document.createElement("button");
+          
+              input.type = "number";
+              input.placeholder = "Введіть число";
+              button.textContent = "Перевернути";
+          
+              form.appendChild(input);
+              form.appendChild(button);
+              document.querySelector(".content").appendChild(form);
+          
+              form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const number = input.value;
+                const reversed = number.split("").reverse().join("");
+          
+                document.cookie = `reversedNumber=${reversed}; path=/;`;
+                alert(`Перевернуте число: ${reversed}`);
+                location.reload();
+              });
+          
+              // Перевірка cookies
+              const cookies = document.cookie
+                .split("; ")
+                .reduce((acc, cookie) => {
+                  const [key, value] = cookie.split("=");
+                  acc[key] = value;
+                  return acc;
+                }, {});
+          
+              if (cookies.reversedNumber) {
+                if (confirm(`Ваше число: ${cookies.reversedNumber}. Зберегти?`)) {
+                  alert("Дані збережені в cookies. Перезавантажте сторінку.");
                 } else {
-                    deleteCookie('reversedNumber');
-                    alert('Cookies видалено. Сторінка буде оновлена.');
-                    location.reload();
+                  document.cookie = "reversedNumber=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                  location.reload();
                 }
-            }
-        };
-    
-        // Функція для перевертання числа
-        function reverseNumber() {
-            const numberInput = document.getElementById('numberInput').value;
-            if (!numberInput) return;
-    
-            const reversed = numberInput.toString().split('').reverse().join('');
-            alert(`Перевернуте число: ${reversed}`);
-    
-            setCookie('reversedNumber', reversed, 1);
-        }
-    
-        // Функція для встановлення cookies
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-        }
-    
-        // Функція для отримання cookies
-        function getCookie(name) {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                const [key, value] = cookie.trim().split('=');
-                if (key === name) return value;
-            }
-            return null;
-        }
-    
-        // Функція для видалення cookies
-        function deleteCookie(name) {
-            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
-        }
-    
-        // Функція для застосування вирівнювання
-        function applyAlignment(alignment) {
-            const elements = ['menu', 'content', 'sidebar'];
-            elements.forEach(id => {
-                const element = document.getElementById(id);
-                element.style.textAlign = alignment;
-            });
-        }
-    
-        // Обробник для застосування вирівнювання
-        document.getElementById('applyAlignment').addEventListener('click', () => {
-            const selectedAlignment = document.querySelector('input[name="alignment"]:checked')?.value;
-            if (selectedAlignment) {
-                applyAlignment(selectedAlignment);
-                localStorage.setItem('alignment', selectedAlignment);
-            } else {
-                alert('Оберіть варіант вирівнювання.');
-            }
-        });
+              }
+            };
+            handleNumberReverse();
+          
+            // 4. Вирівнювання блоків за допомогою радіокнопок
+            const handleAlignment = () => {
+              const alignForm = document.createElement("form");
+              const alignments = ["left", "center", "right"];
+          
+              alignments.forEach((align) => {
+                const label = document.createElement("label");
+                const radio = document.createElement("input");
+          
+                radio.type = "radio";
+                radio.name = "alignment";
+                radio.value = align;
+          
+                label.appendChild(radio);
+                label.append(align);
+                alignForm.appendChild(label);
+              });
+          
+              document.querySelector(".content").appendChild(alignForm);
+          
+              alignForm.addEventListener("change", (e) => {
+                const alignment = e.target.value;
+          
+                [".menu", ".content", ".sidebar"].forEach((selector) => {
+                  document.querySelector(selector).style.textAlign = alignment;
+                });
+          
+                localStorage.setItem("alignment", alignment);
+              });
+          
+              const savedAlignment = localStorage.getItem("alignment");
+              if (savedAlignment) {
+                [".menu", ".content", ".sidebar"].forEach((selector) => {
+                  document.querySelector(selector).style.textAlign = savedAlignment;
+                });
+              }
+            };
+            handleAlignment();
+          
+            // 5. Нумерований список
+            const handleNumberedList = () => {
+              const listContainer = document.createElement("div");
+              const list = document.createElement("ol");
+              const input = document.createElement("input");
+              const addButton = document.createElement("button");
+              const saveButton = document.createElement("button");
+          
+              input.placeholder = "Додати елемент...";
+              addButton.textContent = "Додати";
+              saveButton.textContent = "Зберегти";
+          
+              listContainer.appendChild(input);
+              listContainer.appendChild(addButton);
+              listContainer.appendChild(saveButton);
+              listContainer.appendChild(list);
+              document.querySelector(".content").appendChild(listContainer);
+          
+              addButton.addEventListener("click", () => {
+                const listItem = document.createElement("li");
+                const deleteButton = document.createElement("button");
+          
+                listItem.textContent = input.value;
+                deleteButton.textContent = "Видалити";
+          
+                listItem.appendChild(deleteButton);
+                list.appendChild(listItem);
+          
+                deleteButton.addEventListener("click", () => {
+                  list.removeChild(listItem);
+                });
+              });
+          
+              saveButton.addEventListener("click", () => {
+                const items = Array.from(list.querySelectorAll("li")).map((li) =>
+                  li.textContent.replace("Видалити", "").trim()
+                );
+                localStorage.setItem("numberedList", JSON.stringify(items));
+                alert("Список збережено!");
+              });
+          
+              const savedList = JSON.parse(localStorage.getItem("numberedList"));
+              if (savedList) {
+                savedList.forEach((item) => {
+                  const listItem = document.createElement("li");
+                  const deleteButton = document.createElement("button");
+          
+                  listItem.textContent = item;
+                  deleteButton.textContent = "Видалити";
+          
+                  listItem.appendChild(deleteButton);
+                  list.appendChild(listItem);
+          
+                  deleteButton.addEventListener("click", () => {
+                    list.removeChild(listItem);
+                  });
+                });
+              }
+            };
+            handleNumberedList();
+          });
+          
     </script>    
 </body>
 </html>
