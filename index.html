@@ -33,28 +33,11 @@
         <div class="content" id="content">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
-            <form id="reverseForm">
-                <label for="numberInput">Введіть число:</label>
-                <input type="number" id="numberInput" required>
-                <button type="button" onclick="reverseNumber()">Перевернути</button>
-            </form>
 
-            <!-- Нумеровані блоки для списків -->
-            <div id="numberedBlocks">
-                <div id="block1" class="numbered-block" tabindex="0">Блок 1</div>
-                <div id="block2" class="numbered-block" tabindex="0">Блок 2</div>
-                <div id="block3" class="numbered-block" tabindex="0">Блок 3</div>
-                <div id="block4" class="numbered-block" tabindex="0">Блок 4</div>
-                <div id="block5" class="numbered-block" tabindex="0">Блок 5</div>
-                <div id="block6" class="numbered-block" tabindex="0">Блок 6</div>
-            </div>
-
-            <!-- Форма для додавання елементів списку -->
-            <div id="listForm" style="display: none;">
-                <input type="text" id="listItemInput" placeholder="Введіть елемент">
-                <button id="addToList">Додати</button>
-                <button id="saveList">Зберегти список</button>
-            </div>
+            <!-- Блоки для списків -->
+            <div tabindex="0" class="block" id="block1">Блок 1</div>
+            <div tabindex="0" class="block" id="block2">Блок 2</div>
+            <div tabindex="0" class="block" id="block3">Блок 3</div>
         </div>
 
         <!-- Правий блок -->
@@ -101,14 +84,14 @@
             const tempText = headerText.textContent;
             headerText.textContent = bottomText.textContent;
             bottomText.textContent = tempText;
-
+    
             // Обчислення площі трапеції
             function calculateTrapezoidArea() {
                 const a = 10; // Довжина першої основи
                 const b = 15; // Довжина другої основи
                 const h = 8; // Висота трапеції
                 const area = ((a + b) * h) / 2;
-
+    
                 // Додавання результату в кінець блоку "контент"
                 const contentElement = document.getElementById('content');
                 const areaText = document.createElement('p');
@@ -116,72 +99,60 @@
                 areaText.style.fontWeight = 'bold';
                 contentElement.appendChild(areaText);
             }
-
+    
             // Виклик функції обчислення площі трапеції
             calculateTrapezoidArea();
-
+    
             // Завантаження вирівнювання зі сховища
             const alignment = localStorage.getItem('alignment') || 'justify'; // За замовчуванням по ширині
             applyAlignment(alignment);
             document.querySelector(`input[name="alignment"][value="${alignment}"]`).checked = true;
 
-            // Завантаження збереженого числа (якщо є)
-            const savedNumber = getCookie('reversedNumber');
-            const form = document.getElementById('reverseForm');
-            if (savedNumber) {
-                const saveData = confirm(`Попередній результат: ${savedNumber}. Зберегти ці дані?`);
-                if (saveData) {
-                    alert('Cookies активні. Перезавантажте сторінку, щоб побачити форму.');
-                    form.style.display = 'none';
-                } else {
-                    deleteCookie('reversedNumber');
-                    alert('Cookies видалено. Сторінка буде оновлена.');
-                    location.reload();
-                }
-            }
-
-            // Обробка нумерованих блоків
-            const numberedBlocks = document.querySelectorAll('.numbered-block');
-            numberedBlocks.forEach(block => {
+            // Робота з блоками для списків
+            document.querySelectorAll('.block').forEach(block => {
                 block.addEventListener('focus', () => {
-                    const listForm = document.getElementById('listForm');
-                    listForm.style.display = 'block';
-                    const currentBlockId = block.id;
+                    const blockId = block.id;
+                    const savedList = JSON.parse(localStorage.getItem(blockId)) || [];
 
-                    const savedList = JSON.parse(localStorage.getItem(currentBlockId)) || [];
-                    const listElement = document.createElement('ol');
-                    savedList.forEach(item => {
-                        addListItemToDOM(item, listElement, currentBlockId);
-                    });
+                    // Створюємо форму для додавання елементів
+                    const form = document.createElement('div');
+                    form.innerHTML = `
+                        <input type="text" placeholder="Введіть елемент" id="input-${blockId}">
+                        <button id="add-${blockId}">Додати</button>
+                        <ul id="list-${blockId}"></ul>
+                    `;
 
                     block.innerHTML = '';
-                    block.appendChild(listElement);
-                    block.appendChild(listForm);
+                    block.appendChild(form);
 
-                    document.getElementById('addToList').onclick = () => {
-                        const listItemInput = document.getElementById('listItemInput').value.trim();
-                        if (listItemInput) {
-                            savedList.push(listItemInput);
-                            addListItemToDOM(listItemInput, listElement, currentBlockId);
-                            document.getElementById('listItemInput').value = '';
+                    const list = document.getElementById(`list-${blockId}`);
+
+                    // Додавання збережених елементів у DOM
+                    savedList.forEach(item => {
+                        addItemToDOM(item, list, blockId);
+                    });
+
+                    // Додавання нового елемента
+                    document.getElementById(`add-${blockId}`).addEventListener('click', () => {
+                        const input = document.getElementById(`input-${blockId}`);
+                        const value = input.value.trim();
+                        if (value) {
+                            savedList.push(value);
+                            localStorage.setItem(blockId, JSON.stringify(savedList));
+                            addItemToDOM(value, list, blockId);
+                            input.value = '';
                         }
-                    };
-
-                    document.getElementById('saveList').onclick = () => {
-                        localStorage.setItem(currentBlockId, JSON.stringify(savedList));
-                        alert('Список збережено!');
-                    };
+                    });
                 });
             });
 
-            // Функція для додавання елементу до DOM
-            function addListItemToDOM(item, listElement, blockId) {
+            // Функція для додавання елементів у DOM
+            function addItemToDOM(item, list, blockId) {
                 const li = document.createElement('li');
                 li.textContent = item;
-
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Видалити';
-                deleteButton.onclick = () => {
+                deleteButton.addEventListener('click', () => {
                     const savedList = JSON.parse(localStorage.getItem(blockId)) || [];
                     const index = savedList.indexOf(item);
                     if (index > -1) {
@@ -189,10 +160,9 @@
                         localStorage.setItem(blockId, JSON.stringify(savedList));
                         li.remove();
                     }
-                };
-
+                });
                 li.appendChild(deleteButton);
-                listElement.appendChild(li);
+                list.appendChild(li);
             }
         };
 
@@ -200,10 +170,10 @@
         function reverseNumber() {
             const numberInput = document.getElementById('numberInput').value;
             if (!numberInput) return;
-
+    
             const reversed = numberInput.toString().split('').reverse().join('');
             alert(`Перевернуте число: ${reversed}`);
-
+    
             setCookie('reversedNumber', reversed, 1);
         }
 
