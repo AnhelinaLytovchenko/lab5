@@ -132,7 +132,7 @@
             const savedNumber = getCookie('reversedNumber');
             const form = document.getElementById('reverseForm');
             if (savedNumber) {
-                const saveData = confirm(`Збережені дані: ${savedNumber}. Зберегти ці дані?`);
+                const saveData = confirm(`Попередній результат: ${savedNumber}. Зберегти ці дані?`);
                 if (saveData) {
                     alert('Cookies активні. Перезавантажте сторінку, щоб побачити форму.');
                     form.style.display = 'none';
@@ -151,7 +151,7 @@
             });
 
             // Обробник події для посилання "Додати елемент"
-            document.getElementById('addItemLink').addEventListener('focus', () => {
+            document.getElementById('addItemLink').addEventListener('click', () => {
                 // Показуємо форму для додавання елемента
                 document.getElementById('addItemForm').style.display = 'block';
             });
@@ -175,9 +175,7 @@
                 li.textContent = item;
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Видалити';
-                deleteButton.classList.add('delete-btn');
                 deleteButton.addEventListener('click', () => {
-                    // Видаляємо елемент зі списку
                     const index = savedList.indexOf(item);
                     if (index > -1) {
                         savedList.splice(index, 1);
@@ -206,14 +204,14 @@
     
             setCookie('reversedNumber', reversed, 1);
         }
-    
+
         // Функція для встановлення cookies
         function setCookie(name, value, days) {
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
         }
-    
+
         // Функція для отримання cookies
         function getCookie(name) {
             const cookies = document.cookie.split(';');
@@ -223,7 +221,7 @@
             }
             return null;
         }
-    
+
         // Функція для видалення cookies
         function deleteCookie(name) {
             document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
@@ -231,7 +229,14 @@
 
         // Застосування вирівнювання
         function applyAlignment(alignment) {
-            document.body.style.textAlign = alignment;
+            // Застосовуємо вирівнювання до всіх основних елементів
+            const elements = ['menu', 'content', 'sidebar', 'numberedList'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.textAlign = alignment;
+                }
+            });
             localStorage.setItem('alignment', alignment);
         }
 
