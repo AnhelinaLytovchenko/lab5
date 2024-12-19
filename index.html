@@ -19,6 +19,7 @@
                 <input type="text" class="newItemText" placeholder="Введіть новий елемент" />
                 <button class="addItemButton">Додати</button>
             </div>
+            <ol class="numbered-list" id="header-list"></ol> <!-- Для елементів у цьому блоці -->
         </header>
 
         <!-- Блок меню зліва -->
@@ -37,19 +38,19 @@
                 <input type="text" class="newItemText" placeholder="Введіть новий елемент" />
                 <button class="addItemButton">Додати</button>
             </div>
+            <ol class="numbered-list" id="menu-list"></ol> <!-- Для елементів у цьому блоці -->
         </nav>
 
         <!-- Основний контент -->
         <div class="content" id="content">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
-
             <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Content)</a>
-
-            <div id="numberedListBlock" class="numbered-list-block">
-                <ol id="numberedList"></ol>
-                <button id="saveListButton">Зберегти список</button>
+            <div class="addItemForm" style="display: none;">
+                <input type="text" class="newItemText" placeholder="Введіть новий елемент" />
+                <button class="addItemButton">Додати</button>
             </div>
+            <ol class="numbered-list" id="content-list"></ol> <!-- Для елементів у цьому блоці -->
         </div>
 
         <!-- Футер -->
@@ -65,6 +66,7 @@
                 <input type="text" class="newItemText" placeholder="Введіть новий елемент" />
                 <button class="addItemButton">Додати</button>
             </div>
+            <ol class="numbered-list" id="footer-list"></ol> <!-- Для елементів у цьому блоці -->
         </footer>
 
         <!-- Нижній блок -->
@@ -75,18 +77,23 @@
                 <input type="text" class="newItemText" placeholder="Введіть новий елемент" />
                 <button class="addItemButton">Додати</button>
             </div>
+            <ol class="numbered-list" id="bottom-list"></ol> <!-- Для елементів у цьому блоці -->
         </div>
     </div>
 
     <script>
         window.onload = function () {
-            const savedList = JSON.parse(localStorage.getItem('numberedList')) || [];
-            const numberedList = document.getElementById('numberedList');
-            savedList.forEach(item => {
-                addListItemToDOM(item);
+            // Ініціалізація збережених списків із localStorage
+            const blocks = ['header', 'menu', 'content', 'footer', 'bottom'];
+            blocks.forEach(block => {
+                const savedList = JSON.parse(localStorage.getItem(`${block}-list`)) || [];
+                const listElement = document.getElementById(`${block}-list`);
+                savedList.forEach(item => {
+                    addListItemToDOM(listElement, item);
+                });
             });
 
-            // Обробка події для всіх посилань на сторінці
+            // Обробка події для кожного посилання
             const links = document.querySelectorAll('.add-item-link');
             links.forEach(link => {
                 link.addEventListener('focus', (event) => {
@@ -102,9 +109,15 @@
                     const form = event.target.closest('.addItemForm');
                     const newItem = form.querySelector('.newItemText').value.trim();
                     if (newItem) {
+                        const listElement = form.closest('section').querySelector('.numbered-list');
+                        const blockId = listElement.id;
+                        const blockName = blockId.replace('-list', '');
+                        const savedList = JSON.parse(localStorage.getItem(`${blockName}-list`)) || [];
+
                         savedList.push(newItem);
-                        addListItemToDOM(newItem);
-                        localStorage.setItem('numberedList', JSON.stringify(savedList));
+                        addListItemToDOM(listElement, newItem);
+                        localStorage.setItem(`${blockName}-list`, JSON.stringify(savedList));
+
                         form.style.display = 'none'; // Ховаємо форму після додавання
                         form.querySelector('.newItemText').value = ''; // Очищаємо поле
                     }
@@ -112,28 +125,23 @@
             });
 
             // Функція для додавання елемента до DOM
-            function addListItemToDOM(item) {
+            function addListItemToDOM(listElement, item) {
                 const li = document.createElement('li');
                 li.textContent = item;
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Видалити';
                 deleteButton.addEventListener('click', () => {
+                    const savedList = JSON.parse(localStorage.getItem(`${listElement.id.replace('-list', '')}-list`)) || [];
                     const index = savedList.indexOf(item);
                     if (index > -1) {
                         savedList.splice(index, 1);
-                        localStorage.setItem('numberedList', JSON.stringify(savedList));
+                        localStorage.setItem(`${listElement.id.replace('-list', '')}-list`, JSON.stringify(savedList));
                         li.remove();
                     }
                 });
                 li.appendChild(deleteButton);
-                numberedList.appendChild(li);
+                listElement.appendChild(li);
             }
-
-            // Збереження списку
-            document.getElementById('saveListButton').addEventListener('click', () => {
-                localStorage.setItem('numberedList', JSON.stringify(savedList));
-                alert('Список збережено!');
-            });
         };
     </script>
 </body>
