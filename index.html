@@ -110,7 +110,7 @@
                     const newItem = form.querySelector('.newItemText').value.trim();
                     if (newItem) {
                         // Знаходимо правильний список для цього блоку
-                        const listElement = form.closest('.container').querySelector('.numbered-list');
+                        const listElement = form.closest('div').querySelector('.numbered-list');
                         const blockId = listElement.id;
                         const blockName = blockId.replace('-list', '');
                         const savedList = JSON.parse(localStorage.getItem(`${blockName}-list`)) || [];
