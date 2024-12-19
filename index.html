@@ -30,7 +30,7 @@
         </nav>
 
         <!-- Основний контент -->
-        <div class="content" id="content">
+        <div class="content" id="content" tabindex="0">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
             <form id="reverseForm">
@@ -53,15 +53,14 @@
             </div>
 
             <!-- Вміст номерного блоку -->
-            <div id="numberedListBlock" class="numbered-list-block">
+            <div id="numberedListBlock" class="numbered-list-block" tabindex="0">
                 <ol id="numberedList"></ol>
-                <!-- Кнопка для збереження списку -->
-                <button id="saveListButton">Зберегти список</button>
+                <button id="saveListButton" style="display: none;">Зберегти список</button>
             </div>
         </div>
 
         <!-- Правий блок -->
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar" id="sidebar" tabindex="0">
             <img src="main-page.png" alt="Drift car" style="width:100%;">
             <p>Текст для перевірки вирівнювання.</p>
         </aside>
@@ -142,58 +141,8 @@
                     location.reload();
                 }
             }
-
-            // Завантаження списку з localStorage, якщо є
-            const savedList = JSON.parse(localStorage.getItem('numberedList')) || [];
-            const numberedList = document.getElementById('numberedList');
-            savedList.forEach(item => {
-                addListItemToDOM(item);
-            });
-
-            // Обробник події для посилання "Додати елемент"
-            document.getElementById('addItemLink').addEventListener('click', () => {
-                // Показуємо форму для додавання елемента
-                document.getElementById('addItemForm').style.display = 'block';
-            });
-
-            // Обробник для кнопки додавання елементу
-            document.getElementById('addItemButton').addEventListener('click', () => {
-                const newItem = document.getElementById('newItemText').value.trim();
-                if (newItem) {
-                    savedList.push(newItem);
-                    addListItemToDOM(newItem);
-                    localStorage.setItem('numberedList', JSON.stringify(savedList));
-                    // Ховаємо форму після додавання
-                    document.getElementById('addItemForm').style.display = 'none';
-                    document.getElementById('newItemText').value = ''; // Очищаємо поле
-                }
-            });
-
-            // Функція для додавання елемента до DOM
-            function addListItemToDOM(item) {
-                const li = document.createElement('li');
-                li.textContent = item;
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Видалити';
-                deleteButton.addEventListener('click', () => {
-                    const index = savedList.indexOf(item);
-                    if (index > -1) {
-                        savedList.splice(index, 1);
-                        localStorage.setItem('numberedList', JSON.stringify(savedList));
-                        li.remove();
-                    }
-                });
-                li.appendChild(deleteButton);
-                numberedList.appendChild(li);
-            }
-
-            // Збереження списку
-            document.getElementById('saveListButton').addEventListener('click', () => {
-                localStorage.setItem('numberedList', JSON.stringify(savedList));
-                alert('Список збережено!');
-            });
         };
-
+    
         // Функція для перевертання числа
         function reverseNumber() {
             const numberInput = document.getElementById('numberInput').value;
@@ -204,14 +153,14 @@
     
             setCookie('reversedNumber', reversed, 1);
         }
-
+    
         // Функція для встановлення cookies
         function setCookie(name, value, days) {
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
         }
-
+    
         // Функція для отримання cookies
         function getCookie(name) {
             const cookies = document.cookie.split(';');
@@ -221,15 +170,14 @@
             }
             return null;
         }
-
+    
         // Функція для видалення cookies
         function deleteCookie(name) {
             document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
         }
-
-        // Застосування вирівнювання
+    
+        // Функція для застосування вирівнювання
         function applyAlignment(alignment) {
-            // Застосовуємо вирівнювання до всіх основних елементів
             const elements = ['menu', 'content', 'sidebar', 'numberedList'];
             elements.forEach(id => {
                 const element = document.getElementById(id);
@@ -239,12 +187,76 @@
             });
             localStorage.setItem('alignment', alignment);
         }
-
+    
         // Обробник для кнопки "Застосувати вирівнювання"
         document.getElementById('applyAlignment').addEventListener('click', () => {
             const selectedAlignment = document.querySelector('input[name="alignment"]:checked').value;
             applyAlignment(selectedAlignment);
         });
+
+        // Додавання елементів у список
+        const addItemLink = document.getElementById('addItemLink');
+        const addItemForm = document.getElementById('addItemForm');
+        const addItemButton = document.getElementById('addItemButton');
+        const newItemText = document.getElementById('newItemText');
+        const numberedList = document.getElementById('numberedList');
+        const saveListButton = document.getElementById('saveListButton');
+
+        // Відкриття форми для введення елементу при фокусуванні на номерному блоці
+        document.getElementById('numberedListBlock').addEventListener('focus', () => {
+            addItemForm.style.display = 'block';
+        });
+
+        // Додавання елементу до списку
+        addItemButton.addEventListener('click', () => {
+            const itemText = newItemText.value.trim();
+            if (itemText) {
+                const newItem = document.createElement('li');
+                newItem.textContent = itemText;
+
+                // Створення кнопки для видалення елементу
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Видалити';
+                deleteButton.addEventListener('click', () => {
+                    newItem.remove();
+                    updateLocalStorage();
+                });
+
+                newItem.appendChild(deleteButton);
+                numberedList.appendChild(newItem);
+                newItemText.value = '';
+
+                updateLocalStorage();
+            }
+        });
+
+        // Оновлення списку в localStorage
+        function updateLocalStorage() {
+            const listItems = [];
+            numberedList.querySelectorAll('li').forEach(item => {
+                listItems.push(item.textContent.replace('Видалити', '').trim());
+            });
+            localStorage.setItem('numberedList', JSON.stringify(listItems));
+        }
+
+        // Відновлення списку з localStorage при завантаженні сторінки
+        window.onload = function () {
+            const savedList = JSON.parse(localStorage.getItem('numberedList')) || [];
+            savedList.forEach(itemText => {
+                const newItem = document.createElement('li');
+                newItem.textContent = itemText;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Видалити';
+                deleteButton.addEventListener('click', () => {
+                    newItem.remove();
+                    updateLocalStorage();
+                });
+
+                newItem.appendChild(deleteButton);
+                numberedList.appendChild(newItem);
+            });
+        };
     </script>
 </body>
 </html>
