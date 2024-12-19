@@ -8,13 +8,16 @@
 </head>
 <body>
     <div class="container">
+        <!-- Верхній блок з заголовком -->
         <header>
             <h1 class="left">Дрифт: коротко про головне</h1>
             <div class="x-header">
                 <h2 class="right" id="header-text">Дрифт - це мистецтво!</h2>
             </div>
+            <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Header)</a>
         </header>
 
+        <!-- Блок меню зліва -->
         <nav class="menu" id="menu">
             <input type="checkbox" id="menu-toggle" class="menu-toggle">
             <label for="menu-toggle" class="menu-title">Меню</label>
@@ -25,22 +28,21 @@
                 <li><a href="rating.html">Оцінювання змагань</a></li>
                 <li><a href="cars.html">Автомобілі</a></li>
             </ul>
+            <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Menu)</a>
         </nav>
 
+        <!-- Основний контент -->
         <div class="content" id="content">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
 
-            <!-- Лінк для додавання елемента -->
-            <a href="#" id="addItemLink" class="add-item-link" tabindex="0">Додати елемент до списку</a>
+            <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Content)</a>
 
-            <!-- Форма для додавання елементу до списку -->
             <div id="addItemForm" style="display: none;">
                 <input type="text" id="newItemText" placeholder="Введіть новий елемент" />
                 <button type="button" id="addItemButton">Додати</button>
             </div>
 
-            <!-- Нумерований список -->
             <h2>Створіть нумерований список!</h2>
             <p>Натисніть на посилання, щоб додати елементи до списку.</p>
 
@@ -50,6 +52,7 @@
             </div>
         </div>
 
+        <!-- Футер -->
         <footer>
             <ul>
                 <li>Контакти:</li>
@@ -57,10 +60,13 @@
                 <li>driftloversUA@gmail.com</li>
                 <li>FR legends: @lina & @REVO</li>
             </ul>
+            <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Footer)</a>
         </footer>
 
+        <!-- Нижній блок -->
         <div class="bottom">
             <h2 id="bottom-text">Швидкість, контроль, емоції – ось що таке дрифтинг!</h2>
+            <a href="#" class="add-item-link" tabindex="0">Додати елемент до списку (Bottom)</a>
         </div>
     </div>
 
@@ -73,10 +79,13 @@
                 addListItemToDOM(item);
             });
 
-            // Обробник події для посилання "Додати елемент"
-            document.getElementById('addItemLink').addEventListener('focus', () => {
-                // Показуємо форму для додавання елемента
-                document.getElementById('addItemForm').style.display = 'block';
+            // Обробник події для всіх посилань на сторінці
+            const links = document.querySelectorAll('.add-item-link');
+            links.forEach(link => {
+                link.addEventListener('focus', () => {
+                    // Показуємо форму для додавання елемента
+                    document.getElementById('addItemForm').style.display = 'block';
+                });
             });
 
             // Обробник для кнопки додавання елементу
