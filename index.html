@@ -46,6 +46,12 @@
             <!-- Лінк для додавання елемента -->
             <a href="#" id="addItemLink" class="add-item-link">Додати елемент до списку</a>
 
+            <!-- Форма для додавання елементу до списку -->
+            <div id="addItemForm" style="display: none;">
+                <input type="text" id="newItemText" placeholder="Введіть новий елемент" />
+                <button type="button" id="addItemButton">Додати</button>
+            </div>
+
             <!-- Вміст номерного блоку -->
             <div id="numberedListBlock" class="numbered-list-block">
                 <ol id="numberedList"></ol>
@@ -146,13 +152,20 @@
 
             // Обробник події для посилання "Додати елемент"
             document.getElementById('addItemLink').addEventListener('focus', () => {
-                const newItem = prompt('Введіть новий елемент списку:');
+                // Показуємо форму для додавання елемента
+                document.getElementById('addItemForm').style.display = 'block';
+            });
+
+            // Обробник для кнопки додавання елементу
+            document.getElementById('addItemButton').addEventListener('click', () => {
+                const newItem = document.getElementById('newItemText').value.trim();
                 if (newItem) {
-                    // Додаємо новий елемент до DOM і до списку
                     savedList.push(newItem);
                     addListItemToDOM(newItem);
-                    // Зберігаємо в localStorage
                     localStorage.setItem('numberedList', JSON.stringify(savedList));
+                    // Ховаємо форму після додавання
+                    document.getElementById('addItemForm').style.display = 'none';
+                    document.getElementById('newItemText').value = ''; // Очищаємо поле
                 }
             });
 
@@ -164,7 +177,7 @@
                 deleteButton.textContent = 'Видалити';
                 deleteButton.classList.add('delete-btn');
                 deleteButton.addEventListener('click', () => {
-                    // Видаляємо елемент з localStorage і з DOM
+                    // Видаляємо елемент зі списку
                     const index = savedList.indexOf(item);
                     if (index > -1) {
                         savedList.splice(index, 1);
@@ -176,13 +189,13 @@
                 numberedList.appendChild(li);
             }
 
-            // Обробник для збереження списку (якщо потрібно)
+            // Збереження списку
             document.getElementById('saveListButton').addEventListener('click', () => {
                 localStorage.setItem('numberedList', JSON.stringify(savedList));
                 alert('Список збережено!');
             });
         };
-    
+
         // Функція для перевертання числа
         function reverseNumber() {
             const numberInput = document.getElementById('numberInput').value;
@@ -198,24 +211,22 @@
         function setCookie(name, value, days) {
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${value}; expires=${date.toUTCString()}; path=/`;
+            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
         }
     
         // Функція для отримання cookies
         function getCookie(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [key, value] = cookie.trim().split('=');
+                if (key === name) return value;
             }
             return null;
         }
     
         // Функція для видалення cookies
         function deleteCookie(name) {
-            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
         }
 
         // Застосування вирівнювання
