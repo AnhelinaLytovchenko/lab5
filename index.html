@@ -102,28 +102,16 @@
             calculateTrapezoidArea();
           
             // 3. Перевернути число та робота з cookies
-            const handleNumberReverse = () => {
-              const form = document.createElement("form");
-              const input = document.createElement("input");
-              const button = document.createElement("button");
-          
-              input.type = "number";
-              input.placeholder = "Введіть число";
-              button.textContent = "Перевернути";
-          
-              form.appendChild(input);
-              form.appendChild(button);
-              document.querySelector(".content").appendChild(form);
-          
-              form.addEventListener("submit", (e) => {
-                e.preventDefault();
-                const number = input.value;
-                const reversed = number.split("").reverse().join("");
-          
-                document.cookie = `reversedNumber=${reversed}; path=/;`;
-                alert(`Перевернуте число: ${reversed}`);
-                location.reload();
-              });
+           // Функція для перевертання числа
+        function reverseNumber() {
+            const numberInput = document.getElementById('numberInput').value;
+            if (!numberInput) return;
+    
+            const reversed = numberInput.toString().split('').reverse().join('');
+            alert(`Перевернуте число: ${reversed}`);
+    
+            setCookie('reversedNumber', reversed, 1);
+        }
           
               // Перевірка cookies
               const cookies = document.cookie
@@ -142,48 +130,35 @@
                   location.reload();
                 }
               }
-            };
+            
             handleNumberReverse();
+
+             // Завантаження вирівнювання зі сховища
+             const alignment = localStorage.getItem('alignment') || 'justify'; // За замовчуванням по ширині
+             applyAlignment(alignment);
+             document.querySelector(`input[name="alignment"][value="${alignment}"]`).checked = true;
           
-            // 4. Вирівнювання блоків за допомогою радіокнопок
-            const handleAlignment = () => {
-              const alignForm = document.createElement("form");
-              const alignments = ["left", "center", "right"];
-          
-              alignments.forEach((align) => {
-                const label = document.createElement("label");
-                const radio = document.createElement("input");
-          
-                radio.type = "radio";
-                radio.name = "alignment";
-                radio.value = align;
-          
-                label.appendChild(radio);
-                label.append(align);
-                alignForm.appendChild(label);
-              });
-          
-              document.querySelector(".content").appendChild(alignForm);
-          
-              alignForm.addEventListener("change", (e) => {
-                const alignment = e.target.value;
-          
-                [".menu", ".content", ".sidebar"].forEach((selector) => {
-                  document.querySelector(selector).style.textAlign = alignment;
-                });
-          
-                localStorage.setItem("alignment", alignment);
-              });
-          
-              const savedAlignment = localStorage.getItem("alignment");
-              if (savedAlignment) {
-                [".menu", ".content", ".sidebar"].forEach((selector) => {
-                  document.querySelector(selector).style.textAlign = savedAlignment;
-                });
-              }
-            };
-            handleAlignment();
-          
+            // Функція для застосування вирівнювання
+
+        function applyAlignment(alignment) {
+            const elements = ['menu', 'content', 'sidebar'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                element.style.textAlign = alignment;
+            });
+        }
+    
+        // Обробник для застосування вирівнювання
+        document.getElementById('applyAlignment').addEventListener('click', () => {
+            const selectedAlignment = document.querySelector('input[name="alignment"]:checked')?.value;
+            if (selectedAlignment) {
+                applyAlignment(selectedAlignment);
+                localStorage.setItem('alignment', selectedAlignment);
+            } else {
+                alert('Оберіть варіант вирівнювання.');
+            }
+        });
+
             // 5. Нумерований список
             const handleNumberedList = () => {
               const listContainer = document.createElement("div");
