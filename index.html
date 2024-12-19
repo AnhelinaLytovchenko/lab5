@@ -90,16 +90,19 @@
 
     <script>
         window.onload = function () {
-            // Додаємо подію на focus для кожного блоку
+            // Завантаження збережених списків
+            loadListFromLocalStorage();
+
+            // Обробка фокусу на кожному блоці
             const blocks = document.querySelectorAll('.block');
             blocks.forEach(block => {
                 block.addEventListener('focus', function () {
                     const list = block.querySelector('ol');
                     const newItem = document.createElement('li');
-                    newItem.contentEditable = true;  // дозволяє редагувати елемент
+                    newItem.contentEditable = true;  // Дозволяє редагувати текст
                     newItem.textContent = 'Нове завдання';
                     
-                    // Додаємо кнопку для видалення елемента
+                    // Додавання кнопки для видалення елемента
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = 'Видалити';
                     deleteButton.addEventListener('click', () => {
@@ -110,10 +113,7 @@
                 }, true);
             });
 
-            // Завантаження списків з localStorage
-            loadListFromLocalStorage();
-
-            // Збереження списку в localStorage
+            // Функція для збереження списку в localStorage
             function saveListToLocalStorage(blockId, list) {
                 const items = [];
                 list.querySelectorAll('li').forEach(item => {
@@ -122,7 +122,7 @@
                 localStorage.setItem(blockId, JSON.stringify(items));
             }
 
-            // Завантаження збережених списків з localStorage
+            // Завантаження списків із localStorage
             function loadListFromLocalStorage() {
                 blocks.forEach(block => {
                     const blockId = block.id;
@@ -151,7 +151,7 @@
                 saveListToLocalStorage(blockId, list);
             }
 
-            // Збереження списку при натисканні кнопки
+            // Обробник для кнопки "Зберегти"
             document.querySelectorAll('button[id^="save"]').forEach(button => {
                 button.addEventListener('click', (event) => {
                     const blockId = event.target.id.replace('save', '');
