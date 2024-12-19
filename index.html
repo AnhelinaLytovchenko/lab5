@@ -17,7 +17,7 @@
         </header>
 
         <!-- Блок меню зліва -->
-        <nav class="menu" id="menu" tabindex="0">
+        <nav class="menu" id="menu">
             <input type="checkbox" id="menu-toggle" class="menu-toggle">
             <label for="menu-toggle" class="menu-title">Меню</label>
             <ul class="menu-list">
@@ -30,7 +30,7 @@
         </nav>
 
         <!-- Основний контент -->
-        <div class="content" id="content" tabindex="0">
+        <div class="content" id="content">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
             <form id="reverseForm">
@@ -53,14 +53,15 @@
             </div>
 
             <!-- Вміст номерного блоку -->
-            <div id="numberedListBlock" class="numbered-list-block" tabindex="0">
+            <div id="numberedListBlock" class="numbered-list-block">
                 <ol id="numberedList"></ol>
-                <button id="saveListButton" style="display: none;">Зберегти список</button>
+                <!-- Кнопка для збереження списку -->
+                <button id="saveListButton">Зберегти список</button>
             </div>
         </div>
 
         <!-- Правий блок -->
-        <aside class="sidebar" id="sidebar" tabindex="0">
+        <aside class="sidebar" id="sidebar">
             <img src="main-page.png" alt="Drift car" style="width:100%;">
             <p>Текст для перевірки вирівнювання.</p>
         </aside>
@@ -131,7 +132,7 @@
             const savedNumber = getCookie('reversedNumber');
             const form = document.getElementById('reverseForm');
             if (savedNumber) {
-                const saveData = confirm(`Збережені дані: ${savedNumber}. Зберегти ці дані?`);
+                const saveData = confirm(`Попередній результат: ${savedNumber}. Зберегти ці дані?`);
                 if (saveData) {
                     alert('Cookies активні. Перезавантажте сторінку, щоб побачити форму.');
                     form.style.display = 'none';
@@ -141,8 +142,58 @@
                     location.reload();
                 }
             }
+
+            // Завантаження списку з localStorage, якщо є
+            const savedList = JSON.parse(localStorage.getItem('numberedList')) || [];
+            const numberedList = document.getElementById('numberedList');
+            savedList.forEach(item => {
+                addListItemToDOM(item);
+            });
+
+            // Обробник події для посилання "Додати елемент"
+            document.getElementById('addItemLink').addEventListener('focus', () => {
+                // Показуємо форму для додавання елемента
+                document.getElementById('addItemForm').style.display = 'block';
+            });
+
+            // Обробник для кнопки додавання елементу
+            document.getElementById('addItemButton').addEventListener('click', () => {
+                const newItem = document.getElementById('newItemText').value.trim();
+                if (newItem) {
+                    savedList.push(newItem);
+                    addListItemToDOM(newItem);
+                    localStorage.setItem('numberedList', JSON.stringify(savedList));
+                    // Ховаємо форму після додавання
+                    document.getElementById('addItemForm').style.display = 'none';
+                    document.getElementById('newItemText').value = ''; // Очищаємо поле
+                }
+            });
+
+            // Функція для додавання елемента до DOM
+            function addListItemToDOM(item) {
+                const li = document.createElement('li');
+                li.textContent = item;
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Видалити';
+                deleteButton.addEventListener('click', () => {
+                    const index = savedList.indexOf(item);
+                    if (index > -1) {
+                        savedList.splice(index, 1);
+                        localStorage.setItem('numberedList', JSON.stringify(savedList));
+                        li.remove();
+                    }
+                });
+                li.appendChild(deleteButton);
+                numberedList.appendChild(li);
+            }
+
+            // Збереження списку
+            document.getElementById('saveListButton').addEventListener('click', () => {
+                localStorage.setItem('numberedList', JSON.stringify(savedList));
+                alert('Список збережено!');
+            });
         };
-    
+
         // Функція для перевертання числа
         function reverseNumber() {
             const numberInput = document.getElementById('numberInput').value;
@@ -153,14 +204,14 @@
     
             setCookie('reversedNumber', reversed, 1);
         }
-    
+
         // Функція для встановлення cookies
         function setCookie(name, value, days) {
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
         }
-    
+
         // Функція для отримання cookies
         function getCookie(name) {
             const cookies = document.cookie.split(';');
@@ -170,14 +221,15 @@
             }
             return null;
         }
-    
+
         // Функція для видалення cookies
         function deleteCookie(name) {
             document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
         }
-    
-        // Функція для застосування вирівнювання
+
+        // Застосування вирівнювання
         function applyAlignment(alignment) {
+            // Застосовуємо вирівнювання до всіх основних елементів
             const elements = ['menu', 'content', 'sidebar', 'numberedList'];
             elements.forEach(id => {
                 const element = document.getElementById(id);
@@ -187,74 +239,12 @@
             });
             localStorage.setItem('alignment', alignment);
         }
-    
-        // Додавання елементів у список по події focus
-        const addItemForm = document.getElementById('addItemForm');
-        const newItemText = document.getElementById('newItemText');
-        const numberedList = document.getElementById('numberedList');
-        const addItemButton = document.getElementById('addItemButton');
-    
-        // Функція для показу форми додавання елементу
-        function showAddItemForm(blockId) {
-            const block = document.getElementById(blockId);
-            block.addEventListener('focus', () => {
-                addItemForm.style.display = 'block';
-                addItemButton.onclick = function () {
-                    const itemText = newItemText.value.trim();
-                    if (itemText) {
-                        const newItem = document.createElement('li');
-                        newItem.textContent = itemText;
-    
-                        // Кнопка для видалення елементу
-                        const deleteButton = document.createElement('button');
-                        deleteButton.textContent = 'Видалити';
-                        deleteButton.addEventListener('click', () => {
-                            newItem.remove();
-                            updateLocalStorage();
-                        });
-    
-                        newItem.appendChild(deleteButton);
-                        numberedList.appendChild(newItem);
-                        newItemText.value = '';
-    
-                        updateLocalStorage();
-                    }
-                };
-            });
-        }
-    
-        // Оновлення списку в localStorage
-        function updateLocalStorage() {
-            const listItems = [];
-            numberedList.querySelectorAll('li').forEach(item => {
-                listItems.push(item.textContent.replace('Видалити', '').trim());
-            });
-            localStorage.setItem('numberedList', JSON.stringify(listItems));
-        }
-    
-        // Відновлення списку з localStorage при завантаженні сторінки
-        window.onload = function () {
-            const savedList = JSON.parse(localStorage.getItem('numberedList')) || [];
-            savedList.forEach(itemText => {
-                const newItem = document.createElement('li');
-                newItem.textContent = itemText;
-    
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Видалити';
-                deleteButton.addEventListener('click', () => {
-                    newItem.remove();
-                    updateLocalStorage();
-                });
-    
-                newItem.appendChild(deleteButton);
-                numberedList.appendChild(newItem);
-            });
-    
-            showAddItemForm('numberedListBlock');
-            showAddItemForm('content');
-            showAddItemForm('menu');
-            showAddItemForm('sidebar');
-        };
+
+        // Обробник для кнопки "Застосувати вирівнювання"
+        document.getElementById('applyAlignment').addEventListener('click', () => {
+            const selectedAlignment = document.querySelector('input[name="alignment"]:checked').value;
+            applyAlignment(selectedAlignment);
+        });
     </script>
 </body>
 </html>
