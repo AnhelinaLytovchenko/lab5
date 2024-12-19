@@ -74,7 +74,7 @@
             <h2 id="bottom-text">Швидкість, контроль, емоції – ось що таке дрифтинг!</h2>
         </div>
 
-        <!-- Блоки з можливістю додавання пунктів до списку -->
+        <!-- Блоки для додавання списку -->
         <div class="block" id="block1" tabindex="0">
             <h3>Блок 1</h3>
             <ol id="list1"></ol>
@@ -90,7 +90,7 @@
 
     <script>
         window.onload = function () {
-            // При фокусуванні на кожному блоці додається можливість додавати елементи до списку
+            // Додаємо подію на focus для кожного блоку
             const blocks = document.querySelectorAll('.block');
             blocks.forEach(block => {
                 block.addEventListener('focus', function () {
@@ -98,6 +98,8 @@
                     const newItem = document.createElement('li');
                     newItem.contentEditable = true;  // дозволяє редагувати елемент
                     newItem.textContent = 'Нове завдання';
+                    
+                    // Додаємо кнопку для видалення елемента
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = 'Видалити';
                     deleteButton.addEventListener('click', () => {
@@ -108,19 +110,19 @@
                 }, true);
             });
 
-            // Завантаження збереженого списку з localStorage
+            // Завантаження списків з localStorage
             loadListFromLocalStorage();
 
-            // Функція для збереження списку в localStorage
+            // Збереження списку в localStorage
             function saveListToLocalStorage(blockId, list) {
                 const items = [];
                 list.querySelectorAll('li').forEach(item => {
-                    items.push(item.textContent.replace('Видалити', '').trim()); // зберігаємо тільки текст
+                    items.push(item.textContent.replace('Видалити', '').trim());
                 });
                 localStorage.setItem(blockId, JSON.stringify(items));
             }
 
-            // Завантаження списку з localStorage
+            // Завантаження збережених списків з localStorage
             function loadListFromLocalStorage() {
                 blocks.forEach(block => {
                     const blockId = block.id;
@@ -143,10 +145,9 @@
                 });
             }
 
-            // Функція для видалення елемента зі списку
+            // Видалення елемента зі списку та оновлення localStorage
             function deleteListItem(blockId, list, listItem) {
                 list.removeChild(listItem);
-                // Оновлюємо localStorage після видалення
                 saveListToLocalStorage(blockId, list);
             }
 
