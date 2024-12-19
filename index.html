@@ -8,7 +8,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Верхній блок з заголовком -->
         <header>
             <h1 class="left">Дрифт: коротко про головне</h1>
             <div class="x-header">
@@ -16,20 +15,41 @@
             </div>
         </header>
 
-        <!-- Блоки для роботи зі списками -->
-        <div class="blocks-container">
-            <div class="block" id="block1" tabindex="0">
-                <p>Натисніть, щоб додати список</p>
+        <nav class="menu" id="menu">
+            <input type="checkbox" id="menu-toggle" class="menu-toggle">
+            <label for="menu-toggle" class="menu-title">Меню</label>
+            <ul class="menu-list">
+                <li><a href="index2.html">Головна</a></li>
+                <li><a href="about.html">Що таке дрифт?</a></li>
+                <li><a href="history.html">Історія</a></li>
+                <li><a href="rating.html">Оцінювання змагань</a></li>
+                <li><a href="cars.html">Автомобілі</a></li>
+            </ul>
+        </nav>
+
+        <div class="content" id="content">
+            <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
+            <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
+
+            <!-- Лінк для додавання елемента -->
+            <a href="#" id="addItemLink" class="add-item-link" tabindex="0">Додати елемент до списку</a>
+
+            <!-- Форма для додавання елементу до списку -->
+            <div id="addItemForm" style="display: none;">
+                <input type="text" id="newItemText" placeholder="Введіть новий елемент" />
+                <button type="button" id="addItemButton">Додати</button>
             </div>
-            <div class="block" id="block2" tabindex="0">
-                <p>Натисніть, щоб додати список</p>
-            </div>
-            <div class="block" id="block3" tabindex="0">
-                <p>Натисніть, щоб додати список</p>
+
+            <!-- Нумерований список -->
+            <h2>Створіть нумерований список!</h2>
+            <p>Натисніть на посилання, щоб додати елементи до списку.</p>
+
+            <div id="numberedListBlock" class="numbered-list-block">
+                <ol id="numberedList"></ol>
+                <button id="saveListButton">Зберегти список</button>
             </div>
         </div>
 
-        <!-- Футер -->
         <footer>
             <ul>
                 <li>Контакти:</li>
@@ -38,87 +58,63 @@
                 <li>FR legends: @lina & @REVO</li>
             </ul>
         </footer>
+
+        <div class="bottom">
+            <h2 id="bottom-text">Швидкість, контроль, емоції – ось що таке дрифтинг!</h2>
+        </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const blocks = document.querySelectorAll('.block');
-
-            blocks.forEach(block => {
-                block.addEventListener('focus', () => {
-                    if (!block.querySelector('form')) {
-                        const form = document.createElement('form');
-                        form.innerHTML = `
-                            <input type="text" placeholder="Введіть елемент" class="list-input" />
-                            <button type="button" class="add-item">Додати</button>
-                            <button type="button" class="save-list">Зберегти</button>
-                        `;
-
-                        const list = document.createElement('ul');
-                        list.className = 'list';
-
-                        form.querySelector('.add-item').addEventListener('click', () => {
-                            const input = form.querySelector('.list-input');
-                            const value = input.value.trim();
-                            if (value) {
-                                const li = document.createElement('li');
-                                li.textContent = value;
-
-                                const deleteButton = document.createElement('button');
-                                deleteButton.textContent = 'Видалити';
-                                deleteButton.addEventListener('click', () => {
-                                    li.remove();
-                                    saveToLocalStorage(block.id, getListItems(list));
-                                });
-
-                                li.appendChild(deleteButton);
-                                list.appendChild(li);
-                                input.value = '';
-                                saveToLocalStorage(block.id, getListItems(list));
-                            }
-                        });
-
-                        form.querySelector('.save-list').addEventListener('click', () => {
-                            saveToLocalStorage(block.id, getListItems(list));
-                            block.innerHTML = '';
-                            block.appendChild(list);
-                        });
-
-                        block.innerHTML = '';
-                        block.appendChild(list);
-                        block.appendChild(form);
-
-                        loadFromLocalStorage(block.id, list);
-                    }
-                });
+        // Завантаження сторінки
+        window.onload = function () {
+            const savedList = JSON.parse(localStorage.getItem('numberedList')) || [];
+            const numberedList = document.getElementById('numberedList');
+            savedList.forEach(item => {
+                addListItemToDOM(item);
             });
 
-            function saveToLocalStorage(blockId, items) {
-                localStorage.setItem(blockId, JSON.stringify(items));
-            }
+            // Обробник події для посилання "Додати елемент"
+            document.getElementById('addItemLink').addEventListener('focus', () => {
+                // Показуємо форму для додавання елемента
+                document.getElementById('addItemForm').style.display = 'block';
+            });
 
-            function loadFromLocalStorage(blockId, list) {
-                const items = JSON.parse(localStorage.getItem(blockId) || '[]');
-                items.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item;
+            // Обробник для кнопки додавання елементу
+            document.getElementById('addItemButton').addEventListener('click', () => {
+                const newItem = document.getElementById('newItemText').value.trim();
+                if (newItem) {
+                    savedList.push(newItem);
+                    addListItemToDOM(newItem);
+                    localStorage.setItem('numberedList', JSON.stringify(savedList));
+                    document.getElementById('addItemForm').style.display = 'none';
+                    document.getElementById('newItemText').value = ''; // Очищаємо поле
+                }
+            });
 
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Видалити';
-                    deleteButton.addEventListener('click', () => {
+            // Функція для додавання елемента до DOM
+            function addListItemToDOM(item) {
+                const li = document.createElement('li');
+                li.textContent = item;
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Видалити';
+                deleteButton.addEventListener('click', () => {
+                    const index = savedList.indexOf(item);
+                    if (index > -1) {
+                        savedList.splice(index, 1);
+                        localStorage.setItem('numberedList', JSON.stringify(savedList));
                         li.remove();
-                        saveToLocalStorage(blockId, getListItems(list));
-                    });
-
-                    li.appendChild(deleteButton);
-                    list.appendChild(li);
+                    }
                 });
+                li.appendChild(deleteButton);
+                numberedList.appendChild(li);
             }
 
-            function getListItems(list) {
-                return Array.from(list.children).map(li => li.firstChild.textContent);
-            }
-        });
+            // Збереження списку
+            document.getElementById('saveListButton').addEventListener('click', () => {
+                localStorage.setItem('numberedList', JSON.stringify(savedList));
+                alert('Список збережено!');
+            });
+        };
     </script>
 </body>
 </html>
