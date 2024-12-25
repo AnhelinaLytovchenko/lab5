@@ -14,6 +14,7 @@
             <div class="x-header">
                 <h2 class="right" id="header-text">Дрифт - це мистецтво!</h2>
             </div>
+            <div id="block1" class="block">Посилання 1</div>
         </header>
 
         <!-- Блок меню зліва -->
@@ -27,6 +28,8 @@
                 <li><a href="rating.html">Оцінювання змагань</a></li>
                 <li><a href="cars.html">Автомобілі</a></li>
             </ul>
+            <div>  </div>
+            <div id="block2" class="block">Посилання 2</div>
         </nav>
 
         <!-- Основний контент -->
@@ -38,12 +41,17 @@
                 <input type="number" id="numberInput" required>
                 <button type="button" onclick="reverseNumber()">Перевернути</button>
             </form>
+            <div id="block3" class="block">Посилання 3</div>
+            <button id="saveList">Зберегти список</button>
+            <button id="clearList">Очистити список</button>
+            <ol class="task5" id="numberedList"></ol>
         </div>
 
         <!-- Правий блок -->
         <aside class="sidebar" id="sidebar">
             <img src="main-page.png" alt="Drift car" style="width:100%;">
             <p>Текст для перевірки вирівнювання.</p>
+            <div id="block4" class="block">Посилання 4</div>
         </aside>
 
         <!-- Футер -->
@@ -67,11 +75,13 @@
                 </label>
                 <button type="button" id="applyAlignment">Застосувати</button>
             </form>
+            <div id="block5" class="block">Посилання 5</div>
         </footer>
 
         <!-- Нижній блок -->
         <div class="bottom">
             <h2 id="bottom-text">Швидкість, контроль, емоції – ось що таке дрифтинг!</h2>
+            <div id="block6" class="block">Посилання 6</div>
         </div>
     </div>
 
@@ -174,6 +184,81 @@
                 localStorage.setItem('alignment', selectedAlignment);
             } else {
                 alert('Оберіть варіант вирівнювання.');
+            }
+        });
+
+        //-----------------------------------------------------------
+
+        // Масив для зберігання вибраних елементів
+        let selectedItems = [];
+
+        // Додавання обробника події mouseover для кожного блоку
+        document.querySelectorAll('.block').forEach((block, index) => {
+            block.addEventListener('mouseenter', () => {
+                if (!block.querySelector('input')) {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.placeholder = `Введіть значення для блоку ${index + 1}`;
+                    input.addEventListener('blur', () => {
+                        // Зберігаємо введене значення
+                        const value = input.value.trim();
+                        if (value && !selectedItems.some(item => item.block === index + 1)) {
+                            selectedItems.push({ block: index + 1, value });
+                            updateList();
+                        }
+                        input.remove(); // Видаляємо поле вводу після втрати фокусу
+                    });
+                    block.appendChild(input);
+                    input.focus(); // Переводимо фокус на текстове поле
+                }
+            });
+        });
+
+        // Оновлення списку в DOM
+        function updateList() {
+            const list = document.getElementById('numberedList');
+            list.innerHTML = ''; // Очищення списку
+            selectedItems.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Блок ${item.block}: ${item.value}`;
+
+                // Додаємо кнопку для видалення блоку
+                const removeBtn = document.createElement('span');
+                removeBtn.textContent = 'Видалити';
+                removeBtn.className = 'remove-btn';
+                removeBtn.addEventListener('click', () => removeBlock(item.block));
+
+                listItem.appendChild(removeBtn);
+                list.appendChild(listItem);
+            });
+        }
+
+        // Видалення блоку за номером
+        function removeBlock(blockNumber) {
+            selectedItems = selectedItems.filter(item => item.block !== blockNumber);
+            updateList();
+        }
+
+        // Збереження списку в LocalStorage
+        document.getElementById('saveList').addEventListener('click', () => {
+            localStorage.setItem('numberedList', JSON.stringify(selectedItems));
+            alert('Список збережено!');
+        });
+
+        // Очистка списку
+        document.getElementById('clearList').addEventListener('click', () => {
+            selectedItems = [];
+            localStorage.removeItem('numberedList');
+            updateList();
+            alert('Список очищено!');
+        });
+
+        // Завантаження списку з LocalStorage при завантаженні сторінки
+        window.addEventListener('load', () => {
+            const savedList = localStorage.getItem('numberedList');
+            if (savedList) {
+                selectedItems = JSON.parse(savedList);
+                updateList();
             }
         });
     </script>    

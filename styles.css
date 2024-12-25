@@ -163,6 +163,29 @@ footer {
     color: #333;
 }
 
+.block {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    display: inline-block;
+    cursor: pointer;
+    outline: none;
+}
+.block:hover {
+    border-color: blue; /* Підсвічування блоку при наведенні */
+}
+.remove-btn {
+    margin-left: 10px;
+    color: red;
+    cursor: pointer;
+    font-size: 12px;
+    display: inline;
+}
+
+.task5 {
+    border: 1px solid black;
+}
+
 /* Адаптація для мобільних пристроїв */
 @media (max-width: 768px) {
     .container {
