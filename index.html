@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <!-- Верхній блок з заголовком -->
-        <header>
+        <header id="parent1">
             <h1 class="left">Дрифт: коротко про головне</h1>
             <div class="x-header">
                 <h2 class="right" id="header-text">Дрифт - це мистецтво!</h2>
@@ -18,7 +18,7 @@
         </header>
 
         <!-- Блок меню зліва -->
-        <nav class="menu" id="menu">
+        <nav class="menu" id="parent2">
             <input type="checkbox" id="menu-toggle" class="menu-toggle">
             <label for="menu-toggle" class="menu-title">Меню</label>
             <ul class="menu-list">
@@ -33,7 +33,7 @@
         </nav>
 
         <!-- Основний контент -->
-        <div class="content" id="content">
+        <div class="content" id="parent3">
             <h2>Відкрийте для себе мистецтво дрифту на нашій платформі!</h2>
             <p>Вас завжди захоплював світ автоспорту, і особливо дрифтинг? Тоді ви потрапили за адресою! Наш сайт – це ваш вірний супутник у світі захоплюючих заносів і динамічних перегонів.</p>
             <form id="reverseForm">
@@ -42,20 +42,17 @@
                 <button type="button" onclick="reverseNumber()">Перевернути</button>
             </form>
             <div id="block3" class="block">Посилання 3</div>
-            <button id="saveList">Зберегти список</button>
-            <button id="clearList">Очистити список</button>
-            <ol class="task5" id="numberedList"></ol>
         </div>
 
         <!-- Правий блок -->
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar" id="parent4">
             <img src="main-page.png" alt="Drift car" style="width:100%;">
             <p>Текст для перевірки вирівнювання.</p>
             <div id="block4" class="block">Посилання 4</div>
         </aside>
 
         <!-- Футер -->
-        <footer>
+        <footer id="parent5">
             <ul>
                 <li>Контакти:</li>
                 <li>Ліна Л</li>
@@ -79,9 +76,15 @@
         </footer>
 
         <!-- Нижній блок -->
-        <div class="bottom">
+        <div class="bottom" id="parent6">
             <h2 id="bottom-text">Швидкість, контроль, емоції – ось що таке дрифтинг!</h2>
             <div id="block6" class="block">Посилання 6</div>
+        </div>
+
+        <div>
+            <button id="saveList">Зберегти список</button>
+        <button id="clearList">Очистити список</button>
+        <ol class="task5" id="numberedList"></ol>
         </div>
     </div>
 
@@ -103,7 +106,7 @@
                 const area = ((a + b) * h) / 2;
     
                 // Додавання результату в кінець блоку "контент"
-                const contentElement = document.getElementById('content');
+                const contentElement = document.getElementById('parent3');
                 const areaText = document.createElement('p');
                 areaText.textContent = `Площа трапеції: ${area}`;
                 areaText.style.fontWeight = 'bold';
@@ -169,7 +172,7 @@
     
         // Функція для застосування вирівнювання
         function applyAlignment(alignment) {
-            const elements = ['menu', 'content', 'sidebar'];
+            const elements = ['parent2', 'parent3', 'parent4'];
             elements.forEach(id => {
                 const element = document.getElementById(id);
                 element.style.textAlign = alignment;
@@ -189,63 +192,86 @@
 
         //-----------------------------------------------------------
 
-        // Масив для зберігання вибраних елементів
         let selectedItems = [];
 
-        // Додавання обробника події mouseover для кожного блоку
         document.querySelectorAll('.block').forEach((block, index) => {
-            block.addEventListener('mouseenter', () => {
-                if (!block.querySelector('input')) {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.placeholder = `Введіть значення для блоку ${index + 1}`;
-                    input.addEventListener('blur', () => {
-                        // Зберігаємо введене значення
-                        const value = input.value.trim();
-                        if (value && !selectedItems.some(item => item.block === index + 1)) {
-                            selectedItems.push({ block: index + 1, value });
-                            updateList();
-                        }
-                        input.remove(); // Видаляємо поле вводу після втрати фокусу
-                    });
-                    block.appendChild(input);
-                    input.focus(); // Переводимо фокус на текстове поле
+    block.addEventListener('mouseenter', () => {
+        if (!block.querySelector('input')) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = `Введіть значення для блоку ${index + 1}`;
+            input.addEventListener('blur', () => {
+                const value = input.value.trim();
+
+                // Отримуємо батьківський блок
+                const parentBlock = block.closest(`#parent${index + 1}`);
+
+                if (value && parentBlock) {
+                    // Замінюємо весь вміст батьківського блоку
+                    parentBlock.innerHTML = `<p>${value}</p>`;
+                    updateSelectedItems(index + 1, value);
+                    updateList();
+                } else if (parentBlock) {
+                    // Якщо значення порожнє, відновлюємо попереднє
+                    parentBlock.innerHTML = `<div class="block">Блок ${index + 1}</div>`;
                 }
             });
-        });
 
-        // Оновлення списку в DOM
+            // Очищуємо вміст поточного блоку та додаємо інпут
+            block.innerHTML = '';
+            block.appendChild(input);
+            input.focus();
+        }
+    });
+});
+
+
         function updateList() {
             const list = document.getElementById('numberedList');
-            list.innerHTML = ''; // Очищення списку
+            list.innerHTML = '';
             selectedItems.forEach(item => {
                 const listItem = document.createElement('li');
-                listItem.textContent = `Блок ${item.block}: ${item.value}`;
+                listItem.className = 'list-item';
 
-                // Додаємо кнопку для видалення блоку
-                const removeBtn = document.createElement('span');
-                removeBtn.textContent = 'Видалити';
-                removeBtn.className = 'remove-btn';
-                removeBtn.addEventListener('click', () => removeBlock(item.block));
+                const text = document.createElement('span');
+                text.textContent = `Блок ${item.block}: ${item.value}`;
 
-                listItem.appendChild(removeBtn);
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Видалити';
+                deleteButton.addEventListener('click', () => {
+                    removeItem(item.block);
+                });
+
+                listItem.appendChild(text);
+                listItem.appendChild(deleteButton);
                 list.appendChild(listItem);
             });
         }
 
-        // Видалення блоку за номером
-        function removeBlock(blockNumber) {
-            selectedItems = selectedItems.filter(item => item.block !== blockNumber);
-            updateList();
+        function updateSelectedItems(blockNumber, value) {
+            const existingItemIndex = selectedItems.findIndex(item => item.block === blockNumber);
+            if (existingItemIndex > -1) {
+                selectedItems[existingItemIndex].value = value;
+            } else {
+                selectedItems.push({ block: blockNumber, value });
+            }
         }
 
-        // Збереження списку в LocalStorage
+        function removeItem(blockNumber) {
+            selectedItems = selectedItems.filter(item => item.block !== blockNumber);
+            const parentBlock = document.querySelector(`#parent${blockNumber}`);
+            if (parentBlock) {
+                parentBlock.innerHTML = `<img src="https://via.placeholder.com/100" alt="Зображення ${blockNumber}"><div class="block">Блок ${blockNumber}</div>`;
+            }
+            updateList();
+            localStorage.setItem('numberedList', JSON.stringify(selectedItems));
+        }
+
         document.getElementById('saveList').addEventListener('click', () => {
             localStorage.setItem('numberedList', JSON.stringify(selectedItems));
             alert('Список збережено!');
         });
 
-        // Очистка списку
         document.getElementById('clearList').addEventListener('click', () => {
             selectedItems = [];
             localStorage.removeItem('numberedList');
@@ -253,11 +279,18 @@
             alert('Список очищено!');
         });
 
-        // Завантаження списку з LocalStorage при завантаженні сторінки
         window.addEventListener('load', () => {
             const savedList = localStorage.getItem('numberedList');
             if (savedList) {
                 selectedItems = JSON.parse(savedList);
+
+                selectedItems.forEach(item => {
+                    const parentBlock = document.querySelector(`#parent${item.block}`);
+                    if (parentBlock) {
+                        parentBlock.innerHTML = `<p>${item.value}</p>`;
+                    }
+                });
+
                 updateList();
             }
         });
